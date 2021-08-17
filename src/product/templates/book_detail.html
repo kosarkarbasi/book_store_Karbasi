@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <!-- Start Shop Detail  -->
+    <div class="shop-detail-box-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-5 col-lg-5 col-md-6">
+                    <div id="carousel-example-1" class="single-product-slider carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" role="listbox">
+                            <div class="carousel-item active"><img class="d-block w-100" src="{{ book.image.url }}"
+                                                                   alt="First slide"></div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel-example-1" role="button" data-slide="prev">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel-example-1" role="button" data-slide="next">
+                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-7 col-lg-7 col-md-6">
+                    <div class="single-product-details text-right" dir="rtl">
+                        <h2>{{ book.title }}</h2>
+                        {% if book.discount is not None %}
+                            <h5>
+                                <del>{{ book.price }}</del>
+                                {{ book.calculate_price_after_discount }}
+                            </h5>
+                        {% else %}
+                            <h5 class="text-primary">
+                                {{ book.price }}
+                            </h5>
+                        {% endif %}
+                        <p class="available-stock"><span> موجودی {{ book.inventory }} عدد</span>
+                        <p>
+                        <h4>معرفی کتاب</h4>
+                        <p class="text-justify">{{ book.description }}</p>
+                        <ul>
+                            <li>
+                                <div class="form-group size-st">
+                                    <label class="size-label">امتیاز</label>
+                                    <select id="basic" class="selectpicker show-tick form-control">
+                                        <option value="0">امتیاز دهید</option>
+                                        <option value="1">"★☆☆☆☆"</option>
+                                        <option value="2">"★★☆☆☆"</option>
+                                        <option value="3">"★★★☆☆"</option>
+                                        <option value="4">"★★★★☆"</option>
+                                        <option value="5">"★★★★★"</option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-group quantity-box">
+                                    <label class="control-label">تعداد</label>
+                                    <input class="form-control" value="0" min="0" max="20" type="number">
+                                </div>
+                            </li>
+                        </ul>
+
+                        <div class="price-box-bar">
+                            <div class="cart-and-bay-btn">
+                                <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">بازگشت به
+                                    کتاب ها</a>
+                                <a class="btn hvr-hover" id="add_to_cart" data-fancybox-close="" href="#">افزودن به سبد خرید</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-5">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>کتاب های مشابه</h1>
+                    </div>
+                    <div class="featured-products-box owl-carousel owl-theme">
+                        {% for books in all_books %}
+                            {% for category in books.category.all %}
+                                {% if category in book.category.all and book.title != books.title %}
+                                    <div class="item">
+                                        <div class="products-single fix">
+                                            <div class="box-img-hover">
+                                                <img src="{{ books.image.url }}" class="img-fluid" alt="Image">
+                                                <div class="mask-icon">
+                                                    <ul>
+                                                        <li><a href="{{ books.get_absolute_url }}" data-toggle="tooltip"
+                                                               data-placement="right"
+                                                               title="View"><i
+                                                                class="fas fa-eye"></i></a></li>
+                                                        <li><a href="#" data-toggle="tooltip" data-placement="right"
+                                                               title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                        <li><a href="#" data-toggle="tooltip" data-placement="right"
+                                                               title="Add to Wishlist"><i class="far fa-heart"></i></a>
+                                                        </li>
+                                                    </ul>
+                                                    <a class="cart" href="#">افزودن به سبد خرید</a>
+                                                </div>
+                                            </div>
+                                            <div class="why-text">
+                                                <h4>{{ books.title }}</h4>
+                                                <h5>{{ books.price }}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Cart -->
+{% endblock content %}

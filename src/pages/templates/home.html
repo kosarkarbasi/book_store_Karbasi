@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    BookShop | Home
+{% endblock title %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+    <!-- Start Slider -->
+    <div id="slides-shop" class="cover-slides">
+        <ul class="slides-container">
+            <li class="text-right">
+                <img src="{% static 'home/images/library-events-9-msg.jpg' %}" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>به فروشگاه کتابان <br> خوش آمدید</strong></h1>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-center">
+                <img src="{% static 'home/images/slider_2.jpg' %}" alt="">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>به فروشگاه کتابان <br> خوش آمدید</strong></h1>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="text-left">
+                <img src="{% static 'home/images/slider-image-1-1920x700.jpg' %}" alt="slider image 1">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="m-b-20"><strong>به فروشگاه کتابان <br> خوش آمدید</strong></h1>
+                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="slides-navigation">
+            <a href="#" class="next"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+            <a href="#" class="prev"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+        </div>
+    </div>
+    <!-- End Slider -->
+
+    <!-- Start Categories  -->
+    <div class="categories-shop">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="title-all text-center">
+                        <h1>دسته بندی ها</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/t-shirts-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.0 }}</a>
+                    </div>
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/shirt-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.1 }}</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/wallet-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.2 }}</a>
+                    </div>
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/women-bag-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.3 }}</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/shoes-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.4 }}</a>
+                    </div>
+                    <div class="shop-cat-box">
+                        <img class="img-fluid" src="images/women-shoes-img.jpg" alt=""/>
+                        <a class="btn hvr-hover" href="#">{{ all_categories.5 }}</a>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center">
+                <a class="btn hvr-hover text-light" href="#">همه دسته بندی ها</a>
+            </p>
+        </div>
+    </div>
+    <!-- End Categories -->
+
+    <!-- Start Products  -->
+    <div class="products-box">
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="title-all text-center">
+                <h1>کتاب ها</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="special-menu text-center">
+                <div class="button-group filter-button-group">
+                    <button class="active" data-filter="*">همه</button>
+                    <button data-filter=".top-featured">پربازدیدترین ها</button>
+                    <button data-filter=".best-seller">تازه ترین های کتابان</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row special-list">
+    {% for book in all_books|slice:":4" %}
+        <div class="col-lg-3 col-md-6 special-grid best-seller">
+            <div class="products-single fix">
+                <div class="box-img-hover">
+                    {% if book.discount is not None %}
+                        <div class="type-lb">
+                            <p class="sale">تخفیف</p>
+                        </div>
+                    {% endif %}
+                    <img src="{{ book.image.url }}" class="img-fluid" alt="Image">
+                    <div class="mask-icon">
+                        <ul>
+                            <li><a href="{{ book.get_absolute_url }}" data-toggle="tooltip" data-placement="right"
+                                   title="View"><i
+                                    class="fas fa-eye"></i></a></li>
+                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i
+                                    class="fas fa-sync-alt"></i></a></li>
+                            <li><a href="#" data-toggle="tooltip" data-placement="right"
+                                   title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                        </ul>
+                        <a class="cart" href="#">افزودن به سبد خرید</a>
+                    </div>
+                </div>
+                <div class="why-text">
+                    <h4>{{ book.title }}</h4>
+                    <h5>{{ book.price }}</h5>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <!-- End Products  -->
+
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}
