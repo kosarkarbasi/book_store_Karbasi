@@ -34,7 +34,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='email address',
         max_length=255,
         unique=True,
+        null=True,
+        blank=True
     )
+    device = models.CharField(max_length=200, null=True, blank=True)
     first_name = models.CharField('نام', max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -78,6 +81,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def __str__(self):
+        if self.email:
+            name = self.email
+        else:
+            name = self.device
+        return str(name)
+
 
 # -------------- managers
 
@@ -108,9 +118,6 @@ class Customer(User):
         verbose_name = 'مشتری'
         verbose_name_plural = 'مشتری ها'
 
-    def __str__(self):
-        return self.email
-
     def save(self, *args, **kwargs):
         """
         متد سیو اورراید شده است که هر دفعه نیازی نباشد type را برای یوزرها تعریف کنیم
@@ -129,9 +136,6 @@ class Personnel(User):
         verbose_name = 'کارمند'
         verbose_name_plural = 'کارمندها'
 
-    def __str__(self):
-        return self.email
-
     def save(self, *args, **kwargs):
         """
         متد سیو اورراید شده است که هر دفعه نیازی نباشد type را برای یوزرها تعریف کنیم
@@ -149,9 +153,6 @@ class Admin(User):
         proxy = True
         verbose_name = 'ادمین'
         verbose_name_plural = 'ادمین ها'
-
-    def __str__(self):
-        return self.email
 
     def save(self, *args, **kwargs):
         """

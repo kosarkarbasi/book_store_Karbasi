@@ -18,7 +18,7 @@ class AmountPercentDiscount(models.Model):
         ('Amount', 'Amount'),
     )
     type = models.CharField(choices=DISCOUNT_TYPE_CHOICES, max_length=7)
-    percent = models.FloatField(blank=True, null=True)
+    percent = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)],blank=True, null=True)
     amount = models.FloatField(blank=True, null=True)
     max_discount = models.FloatField(blank=True, null=True)
     active = models.BooleanField(default=False)
@@ -27,9 +27,16 @@ class AmountPercentDiscount(models.Model):
         if self.active:
             self.active = False
 
+    @property
+    def discount_value(self):
+        if self.type == 'Percent':
+            return self.percent
+        elif self.type == 'Amount':
+            return self.amount
+
     def __str__(self):
         if self.amount is None:
-            return f'{self.type} | {self.percent}%'
+            return f'{self.type} | {self.percent * 100}%'
         elif self.percent is None:
             return f'{self.type} | {self.amount}'
 

@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from .models import Customer, Personnel, Admin, Address, User
 
 
-# admin.site.register(User)
+admin.site.register(User)
 @admin.register(Address)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("city", "postal_code", 'user', 'active')
@@ -14,17 +14,17 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", 'active_address', "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar")
+    fields = ("email", 'phone_number', "avatar", 'device')
     readonly_fields = ('password',)
 
 
 @admin.register(Personnel)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar")
+    fields = ("email", 'phone_number', "avatar", 'device')
 
 
 @admin.register(Admin)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar")
+    fields = ("email", 'phone_number', "avatar", 'device')

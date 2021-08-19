@@ -83,33 +83,48 @@ class Book(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('book_detail', kwargs={'slug': self.slug})
+        # return reverse('book_detail', kwargs={'slug': self.slug})
+        return reverse('book_detail', kwargs={'pk': self.pk})
 
-    def save(self, *args, **kwargs):  # new
+    def save(self, *args, **kwargs):
+        """
+        save method for slug
+        """
         if not self.slug:
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
     def update_count(self, quantity):
-        if quantity < self.quantity:
-            self.quantity = self.quantity - quantity
+        """
+        update inventory after per order
+        :param quantity: quantity of book that customer ordered
+        :return: update value of inventory
+        """
+        if quantity < self.inventory:
+            self.inventory = self.inventory - quantity
         else:
             return 'موجودی کتاب کافی نیست'
 
     def calculate_price_after_discount(self):
+        """
+        calculate price after percent or amount discount
+        :return: price of product after discount
+        """
         if self.discount:
             if self.discount.type == 'Amount':
                 new_price = self.price - self.discount.amount
                 if new_price < self.discount.max_discount:
-                    self.price = new_price
-                    return self.price
+                    # self.price = new_price
+                    return int(new_price)
                 else:
-                    return 'مقدار تخفیف بیش از حد مجاز است'
+                    return self.price
 
             elif self.discount.type == 'Percent':
-                new_price = self.price - (self.price * self.discount.percent / 100.00)
+                new_price = self.price - (self.price * self.discount.percent)
                 self.price = new_price
-                return new_price
+                return int(new_price)
+        else:
+            return self.price
 
 
 class Comment(models.Model):

@@ -4,6 +4,73 @@ from product.models import Book
 from discount.models import AmountPercentDiscount, CodeDiscount
 
 
+class Order(models.Model):
+    """
+    اوردر نهایی که کاربر تمامی آیتم هارا انتخاب کرده و ثبت یا سفارش میکند
+    STATUS_CHOICES
+    items: آیتم های انتخابی
+    customer_id: آیدی مشتری
+    code: کد تخفیف
+    status: وصعیت ثبت یا سفارش
+    start_date: تاریخ تشکیل اوردر
+    order_date: تاریخ دادن اوردر
+    """
+    STATUS_CHOICES = [('ordering', 'سفارش'), ('submit', 'ثبت')]
+    # items = models.ManyToManyField(ShoppingCart)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    code = models.ForeignKey(CodeDiscount, on_delete=models.CASCADE, blank=True, null=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=8)
+    order_date = models.DateTimeField(auto_now_add=True)
+
+    # order_date = models.DateTimeField()
+
+    @property
+    def address(self):
+        active_address = Customer.objects.filter(pk=self.customer_id).filter(addresses__active=True)
+        # active_address = Customer.active_address
+        return active_address
+
+    @property
+    def total_price_with_discount(self):
+        order_items = self.shoppingcart_set.all()
+        total = sum([item.item.calculate_price_after_discount() * item.quantity for item in order_items])
+        return int(total)
+
+    @property
+    def total_price_wihout_discount(self):
+        order_items = self.shoppingcart_set.all()
+        total = sum([item.item.price * item.quantity for item in order_items])
+        return int(total)
+
+    @property
+    def total_discount(self):
+        return self.total_price_wihout_discount - self.total_price_with_discount
+
+    @property
+    def cart_items(self):
+        order_items = self.shoppingcart_set.all()
+        total = sum([item.quantity for item in order_items])
+        return total
+
+    @property
+    def check_code(self):
+        if self.code.active:
+            return True
+        else:
+            return False
+
+    def price_with_code(self):
+        final_price = self.code.calculate_price(self.total_price_with_discount)
+        return final_price
+
+    def __str__(self):
+        return str(self.pk)
+
+    class Meta:
+        verbose_name = 'سفارش'
+        verbose_name_plural = 'سفارشات'
+
+
 class ShoppingCart(models.Model):
     """
     سفارشات کاربر در سبد خریدش، در این مدل قرار می گیرد
@@ -17,21 +84,27 @@ class ShoppingCart(models.Model):
     cost: هزینه نهایی کتاب
     """
     item = models.ForeignKey(Book, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+    # customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
 
     @property
-    def price(self):
-        price = self.item.price * self.quantity
-        return price
+    def quantity_price(self):
+        """
+        calculate price with discount * quantity
+        :return: price(int)
+        """
+        price = self.item.calculate_price_after_discount() * self.quantity
+        return int(price)
 
     @property
     def discount(self):
-        discount = self.item.discount
-        return discount
+        discount = self.item.discount.discount_value * 100
+        return int(discount)
+
 
     @property
-    def cost(self):
+    def total_cost(self):
         total_cost = self.item.calculate_price_after_discount()
         return total_cost
 
@@ -40,54 +113,8 @@ class ShoppingCart(models.Model):
         return 'done'
 
     def __str__(self):
-        return f'{self.customer} | {self.item}'
+        return self.item.title
 
     class Meta:
         verbose_name = 'سبد خرید'
         verbose_name_plural = 'سبدهای خرید'
-
-
-class Order(models.Model):
-    """
-    اوردر نهایی که کاربر تمامی آیتم هارا انتخاب کرده و ثبت یا سفارش میکند
-    STATUS_CHOICES
-    items: آیتم های انتخابی
-    customer_id: آیدی مشتری
-    code: کد تخفیف
-    status: وصعیت ثبت یا سفارش
-    start_date: تاریخ تشکیل اوردر
-    order_date: تاریخ دادن اوردر
-    """
-    STATUS_CHOICES = [('ordering', 'سفارش'), ('submit', 'ثبت')]
-    items = models.ManyToManyField(ShoppingCart)
-    customer_id = models.OneToOneField(Customer, on_delete=models.CASCADE)
-    code = models.ForeignKey(CodeDiscount, on_delete=models.CASCADE, blank=True, null=True)
-    status = models.CharField(choices=STATUS_CHOICES, max_length=8)
-    start_date = models.DateTimeField(auto_now_add=True)
-    order_date = models.DateTimeField()
-
-    @property
-    def address(self):
-        active_address = Customer.objects.filter(pk=self.customer_id).filter(addresses__active=True)
-        # active_address = Customer.active_address
-        return active_address
-
-    @property
-    def total_price(self):
-        queryset = self.items.all().aggregate(
-            total_price=models.Sum('cost'))
-        return queryset["total_price"]
-
-    def price_with_code(self):
-        final_price = self.code.calculate_price(self.total_price)
-        return final_price
-
-    def __str__(self):
-        return f'{self.customer_id} | {self.status}'
-
-    class Meta:
-        verbose_name = 'سفارش'
-        verbose_name_plural = 'سفارشات'
-
-
-

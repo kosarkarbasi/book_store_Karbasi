@@ -35,14 +35,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # my apps
+    # modules
     'django_extensions',
     'phonenumber_field',
+    'rest_framework',
+    'django.contrib.humanize',  # for money
+
+    # apps
     'users',
     'discount',
     'order',
     'product',
     'pages',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +69,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'pages/templates', BASE_DIR / 'users/templates',
-                 BASE_DIR / 'product/templates']
+                 BASE_DIR / 'product/templates', BASE_DIR / 'order/templates']
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -71,7 +79,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # my context processor
-                'product.custom_context_processor.book_renderer'
+                'product.custom_context_processor.book_renderer',
+                'order.custom_context_processors.cart',
+                # 'order.custom_context_processors.order',
             ],
         },
     },

@@ -28,8 +28,54 @@
 
 
     <link rel="stylesheet" href="{% static 'base/css/style.css' %}">
+
+    {% load humanize %}
+
+    <script type="text/javascript">
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function uuidv4() {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        }
+
+        let device = getCookie('device')
+
+        if (device == null || device == undefined){
+            device = uuidv4()
+        }
+
+        document.cookie ='device=' + device + ";domain=;path=/"
+
+    </script>
 </head>
 <body>
+<!-- Show massages -->
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <!-- Start Main Top -->
 <div class="main-top">
     <div class="container-fluid">
@@ -38,49 +84,41 @@
                 <div class="text-slid-box">
                     <div id="offer-box" class="carouselTicker">
                         <ul class="offer-box">
-                            <li>
-                                <i class="fab fa-opencart"></i> Off 10%! Shop Now Man
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> 50% - 80% off on Fashion
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> Off 50%! Shop Now
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> Off 10%! Shop Now Man
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> 50% - 80% off on Fashion
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
-                            </li>
-                            <li>
-                                <i class="fab fa-opencart"></i> Off 50%! Shop Now
-                            </li>
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> Off 10%! Shop Now Man#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> 50% - 80% off on Fashion#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> Off 50%! Shop Now#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> Off 10%! Shop Now Man#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> 50% - 80% off on Fashion#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20#}
+                            {#                            </li>#}
+                            {#                            <li>#}
+                            {#                                <i class="fab fa-opencart"></i> Off 50%! Shop Now#}
+                            {#                            </li>#}
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                {#                    <div class="custom-select-box">#}
-                {#                        <select id="basic" class="selectpicker show-tick form-control" data-placeholder="$ USD">#}
-                {#                            <option>¥ JPY</option>#}
-                {#                            <option>$ USD</option>#}
-                {#                            <option>€ EUR</option>#}
-                {#                        </select>#}
-                {#                    </div>#}
                 <div class="right-phone-box">
                     <p>با ما تماس بگیرید :- <a href="#"> +98 912 121 212</a></p>
                 </div>
                 <div class="our-link">
                     <ul>
-                        <li><a href="#">ورود به حساب کاربری</a></li>
-                        {#                            <li><a href="#">Our location</a></li>#}
+                        <li><a href="{% url 'users:login' %}">ورود به حساب کاربری</a></li>
                         <li><a href="#">ارتباط با ما</a></li>
                     </ul>
                 </div>
@@ -111,13 +149,13 @@
                     <li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">خانه</a></li>
                     <li class="nav-item"><a class="nav-link" href="">درباره ما</a></li>
                     <li class="nav-item">
-                        <a href="{% url 'book_list' %}" class="nav-link" data-toggle="dropdown">کتاب
+                        <a href="{% url 'book_list' %}" class="nav-link">کتاب
                             ها</a>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">خرید</a>
                         <ul class="dropdown-menu">
-                            <li><a href="cart.html">Cart</a></li>
+                            <li><a href="{% url 'cart' %}">Cart</a></li>
                             <li><a href="checkout.html">Checkout</a></li>
                             <li><a href="my-account.html">My Account</a></li>
                             <li><a href="wishlist.html">Wishlist</a></li>
@@ -136,7 +174,7 @@
                     <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
                     <li class="side-menu"><a href="#">
                         <i class="fa fa-shopping-bag"></i>
-                        <span class="badge">3</span>
+                        <span class="badge">{{ cart_items|length }}</span>
                     </a></li>
                 </ul>
             </div>
@@ -147,24 +185,18 @@
             <a href="#" class="close-side"><i class="fa fa-times"></i></a>
             <li class="cart-box">
                 <ul class="cart-list">
-                    <li>
-                        <a href="#" class="photo"><img src="images/img-pro-01.jpg" class="cart-thumb" alt=""/></a>
-                        <h6><a href="#">Delica omtantur </a></h6>
-                        <p>1x - <span class="price">$80.00</span></p>
-                    </li>
-                    <li>
-                        <a href="#" class="photo"><img src="images/img-pro-02.jpg" class="cart-thumb" alt=""/></a>
-                        <h6><a href="#">Omnes ocurreret</a></h6>
-                        <p>1x - <span class="price">$60.00</span></p>
-                    </li>
-                    <li>
-                        <a href="#" class="photo"><img src="images/img-pro-03.jpg" class="cart-thumb" alt=""/></a>
-                        <h6><a href="#">Agam facilisis</a></h6>
-                        <p>1x - <span class="price">$40.00</span></p>
-                    </li>
+                    {% for item in cart_items %}
+                        <li>
+                            <a href="#" class="photo"><img src="{{ item.item.image.url }}" class="cart-thumb"
+                                                           alt=""/></a>
+                            <h6><a href="#">{{ item.item.title }}</a></h6>
+                            <p>{{ item.quantity }}x - <span
+                                    class="price">{{ item.quantity_price|intcomma }}</span></p>
+                        </li>
+                    {% endfor %}
                     <li class="total">
-                        <a href="#" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
-                        <span class="float-right"><strong>Total</strong>: $180.00</span>
+                        <a href="{% url 'cart' %}" class="btn btn-default hvr-hover btn-cart">سبد خرید</a>
+                        <span class="float-right"><strong>جمع</strong>: not set yet</span>
                     </li>
                 </ul>
             </li>

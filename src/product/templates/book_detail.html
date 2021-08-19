@@ -55,18 +55,34 @@
                                 </div>
                             </li>
                             <li>
-                                <div class="form-group quantity-box">
-                                    <label class="control-label">تعداد</label>
-                                    <input class="form-control" value="0" min="0" max="20" type="number">
-                                </div>
+
                             </li>
                         </ul>
 
                         <div class="price-box-bar">
+                            <form method="post" action="{% url 'book_detail' book.pk %}">
+                                {% csrf_token %}
+                                <ul>
+                                    <li>
+                                        <div class="form-group quantity-box">
+                                            <label for="quantity" class="control-label">تعداد</label>
+                                            <input id="quantity" name="quantity" class="form-control" value="0" min="0" max="20" type="number">
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div>
+                                            <input type="submit" class="btn hvr-hover" data-fancybox-close=""
+                                                   value="افزودن به سبد خرید">
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <p class="text-danger">{{ inventory_message }}</p>
+                                    </li>
+                                </ul>
+                            </form>
                             <div class="cart-and-bay-btn">
                                 <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">بازگشت به
                                     کتاب ها</a>
-                                <a class="btn hvr-hover" id="add_to_cart" data-fancybox-close="" href="#">افزودن به سبد خرید</a>
                             </div>
                         </div>
                     </div>
