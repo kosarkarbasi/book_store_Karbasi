@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+    <!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Cart</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active">Cart</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+    <!-- Start Cart  -->
+    <div class="cart-box-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-main table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Images</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>discount</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in order.shoppingcart_set.all %}
+                                <tr>
+                                    <td class="thumbnail-img">
+                                        <a href="#">
+                                            <img class="img-fluid" src="{{ item.item.image.url }}" alt=""/>
+                                        </a>
+                                    </td>
+                                    <td class="name-pr">
+                                        <a href="{% url 'book_detail' item.item.pk %}">
+                                            {{ item.item.title }}
+                                        </a>
+                                    </td>
+                                    <td class="price-pr" dir="rtl">
+                                        <p>{{ item.item.price|intcomma }} ریال</p>
+                                    </td>
+                                    <td class="price-pr" dir="rtl">
+                                        {% if  item.item.discount is not None %}
+                                            <p>{{ item.discount|intcomma }} درصد</p>
+                                        {% else %}
+                                            <p>0</p>
+                                        {% endif %}
+
+                                    </td>
+                                    {#<td class="quantity-box"><input type="number" name="override_quantity" size="4" value="{{ item.quantity }}"#}
+                                    {#min="0" step="1" class="c-input-text qty text"></td>#}
+                                    <td>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    {{ item.quantity }}
+                                                </td>
+                                                <td>
+                                                    <form method='get'
+                                                          action='{% url 'cart' %}'>
+                                                        <input type="submit" value="+" name="add"/>
+                                                        <input type="submit" value="_" name="remove"/>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                    <td class="total-pr">
+{#                                        <p>{{ item.quantity }}</p>#}
+                                        <p>{{ item.quantity_price|intcomma }}</p>
+                                    </td>
+                                    <td class="remove-pr">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <a href="{% url 'delete_item' item.pk %}">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-5">
+                <div class="col-lg-6 col-sm-6">
+                    <div class="coupon-box">
+
+                        <form method="get"
+                              action="{% url 'cart' %}?total=12">
+                            <div class="input-group input-group-sm">
+                                {% csrf_token %}
+                                <input class="form-control" placeholder="Enter your coupon code"
+                                       aria-label="Coupon code"
+                                       type="text" name="code">
+                                <div class="input-group-append">
+                                    <button class="btn btn-theme" type="submit">کد تخفیف</button>
+                                </div>
+
+                            </div>
+                        </form>
+                        <p class="text-danger">{{ code_message }}</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-sm-6">
+                    <div class="update-box">
+                        <input value="Update Cart" type="submit">
+                    </div>
+                </div>
+            </div>
+            <div class="row my-5">
+                <div class="col-lg-8 col-sm-12"></div>
+                <div class="col-lg-4 col-sm-12">
+                    <div class="order-box">
+                        <h3>Order summary</h3>
+                        <div class="d-flex">
+                            <h4>جمع کل</h4>
+                            <div class="ml-auto font-weight-bold"
+                                 dir="rtl">{{ order.total_price_with_discount|intcomma }} ریال
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <h4>تخفیف</h4>
+                            <div class="ml-auto font-weight-bold" dir="rtl">
+                                {{ order.total_discount|intcomma }} ریال
+                            </div>
+                        </div>
+                        <hr class="my-1">
+                        <div class="d-flex">
+                            <h4>کد تخفیف</h4>
+                            <div class="ml-auto font-weight-bold">{{ order.code.discount_value }}%</div>
+                        </div>
+                        {#                        <div class="d-flex">#}
+                        {#                            <h4>Tax</h4>#}
+                        {#                            <div class="ml-auto font-weight-bold"> $ 2</div>#}
+                        {#                        </div>#}
+                        <div class="d-flex">
+                            <h4>هزینه ارسال</h4>
+                            {% if order.total_price_with_discount > 1000000 %}
+                                <div class="ml-auto font-weight-bold"> رایگان</div>
+                            {% else %}
+                                <div class="ml-auto font-weight-bold" dir="rtl">{{ 250000|intcomma }} ریال</div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                        <div class="d-flex gr-total">
+                            <h5>جمع کل</h5>
+                            <div class="ml-auto h5" dir="rtl">{{ price_with_code|intcomma }}
+                                {#                            <div class="ml-auto h5" dir="rtl">{{ code_total }}#}
+                                ریال
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+                <div class="col-12 d-flex shopping-box"><a href="{% url 'checkout' %}"
+                                                           class="ml-auto btn hvr-hover">Checkout</a></div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Cart -->
+{% endblock content %}
