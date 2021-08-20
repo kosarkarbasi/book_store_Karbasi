@@ -40,7 +40,6 @@ def cart(request):
     #     if shopping_cart_item.quantity == 0:
     #         shopping_cart_item.remove_from_cart()
     input_code = request.GET.get('code')
-    print('code: ', input_code)
     code_message = ''
     price_with_code = order.total_price_with_discount
     now = timezone.now()
@@ -49,6 +48,8 @@ def cart(request):
             code_discount = CodeDiscount.objects.get(code__exact=input_code, start_date__lte=now, end_date__gte=now,
                                                      active=True)
             # if code_discount:
+            order.save_code(code_discount)
+            print('order.code', order.code)
             code_message = 'کد اعمال شد'
             price_with_code = order.price_with_code(code_discount)
         except ObjectDoesNotExist:
@@ -70,4 +71,9 @@ def delete_product(request, pk):
 
 @login_required(login_url='login.html')
 def checkout(request):
-    return render(request, 'checkout.html')
+    order, created = Order.objects.get_or_create(customer=request.user, status='ordering')
+    code = order.code
+    print('code:', code)
+    price_with_code = order.price_with_code(code)
+    discount = order.code_value(code)
+    return render(request, 'checkout.html', {'order': order, 'price_with_code': price_with_code, 'discount': discount})

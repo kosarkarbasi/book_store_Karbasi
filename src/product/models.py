@@ -60,7 +60,7 @@ class Book(models.Model):
     category = models.ManyToManyField(Category, related_name='categories')
     description = models.TextField(max_length=1200, null=True, blank=True)
     inventory = models.IntegerField()
-    price = models.PositiveIntegerField()
+    price = models.PositiveBigIntegerField()
     discount = models.ForeignKey(AmountPercentDiscount, on_delete=models.CASCADE, null=True, blank=True)
     slug = models.SlugField(null=False, unique=True, allow_unicode=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -117,7 +117,7 @@ class Book(models.Model):
                     # self.price = new_price
                     return int(new_price)
                 else:
-                    return self.price
+                    return int(self.price)
 
             elif self.discount.type == 'Percent':
                 new_price = self.price - (self.price * self.discount.percent)

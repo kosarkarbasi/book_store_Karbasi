@@ -16,7 +16,7 @@ def cart(request):
 
     cart_items = ShoppingCart.objects.filter(order__customer=customer)
     for item in cart_items:
-        item.item.calculate_price_after_discount()
+        item.item.discount
     return {'cart_items': cart_items}
 
 # def order(request):

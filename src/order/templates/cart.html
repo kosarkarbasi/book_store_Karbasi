@@ -54,7 +54,11 @@
                                     </td>
                                     <td class="price-pr" dir="rtl">
                                         {% if  item.item.discount is not None %}
-                                            <p>{{ item.discount|intcomma }} درصد</p>
+                                            {% ifequal item.item.discount.type|stringformat:'s' 'Percent' %}
+                                                <p>{{ item.discount|intcomma }} درصد</p>
+                                            {% else %}
+                                                <p>{{ item.discount|intcomma }} ریال</p>
+                                            {% endifequal %}
                                         {% else %}
                                             <p>0</p>
                                         {% endif %}
@@ -80,7 +84,7 @@
 
                                     </td>
                                     <td class="total-pr">
-{#                                        <p>{{ item.quantity }}</p>#}
+                                        {#                                        <p>{{ item.quantity }}</p>#}
                                         <p>{{ item.quantity_price|intcomma }}</p>
                                     </td>
                                     <td class="remove-pr">

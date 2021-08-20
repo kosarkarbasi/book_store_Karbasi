@@ -52,12 +52,22 @@ class Order(models.Model):
         total = sum([item.quantity for item in order_items])
         return total
 
+    def code_value(self, code):
+        if code:
+            return self.code.discount_value
+        else:
+            return 0
+
     @property
     def check_code(self):
         if self.code.active:
             return True
         else:
             return False
+
+    def save_code(self, code):
+        self.code = code
+        self.save()
 
     def price_with_code(self, code):
         self.code = code

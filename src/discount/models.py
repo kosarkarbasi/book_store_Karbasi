@@ -19,8 +19,8 @@ class AmountPercentDiscount(models.Model):
     )
     type = models.CharField(choices=DISCOUNT_TYPE_CHOICES, max_length=7)
     percent = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
-    amount = models.FloatField(blank=True, null=True)
-    max_discount = models.FloatField(blank=True, null=True)
+    amount = models.IntegerField(blank=True, null=True)
+    max_discount = models.IntegerField(blank=True, null=True)
     active = models.BooleanField(default=False)
 
     def cancle_activation(self):
