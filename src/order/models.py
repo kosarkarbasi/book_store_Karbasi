@@ -59,9 +59,13 @@ class Order(models.Model):
         else:
             return False
 
-    def price_with_code(self):
-        final_price = self.code.calculate_price(self.total_price_with_discount)
-        return final_price
+    def price_with_code(self, code):
+        self.code = code
+        if self.code:
+            final_price = self.total_price_with_discount - self.code.calculate_discount(self.total_price_with_discount)
+            return int(final_price)
+        else:
+            return int(self.total_price_with_discount)
 
     def __str__(self):
         return str(self.pk)
@@ -85,8 +89,20 @@ class ShoppingCart(models.Model):
     """
     item = models.ForeignKey(Book, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0, null=True, blank=True)
-    # customer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+
+    @property
+    def discount(self):
+        discount = self.item.discount.discount_value * 100
+        return int(discount)
+
+    @property
+    def total_cost(self):
+        total_cost = self.item.calculate_price_after_discount()
+        return total_cost
+
+    def update_quantity(self, quantity):
+        self.quantity = quantity
 
     @property
     def quantity_price(self):
@@ -96,17 +112,6 @@ class ShoppingCart(models.Model):
         """
         price = self.item.calculate_price_after_discount() * self.quantity
         return int(price)
-
-    @property
-    def discount(self):
-        discount = self.item.discount.discount_value * 100
-        return int(discount)
-
-
-    @property
-    def total_cost(self):
-        total_cost = self.item.calculate_price_after_discount()
-        return total_cost
 
     def remove_from_cart(self):
         self.delete()

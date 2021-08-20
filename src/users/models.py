@@ -163,49 +163,44 @@ class Admin(User):
         return super().save(*args, **kwargs)
 
 
+class Province(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=30, unique=True)
+    slug = models.SlugField()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'استان'
+        verbose_name_plural = 'استان ها'
+
+
+class City(models.Model):
+    name = models.CharField(max_length=20)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE)
+    slug = models.SlugField()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'شهر'
+        verbose_name_plural = 'شهر ها'
+
+
 class Address(models.Model):
     """
     مدل آدرس کاربر
     city: شهر
+    province: استان
     postal code: کد پستی
     full_address: آدرس کامل
     active: اکتیوبودن یا نبودن : True/false
     """
-    CITY_CHOICES = (
-        ('AS', 'آذربایجان شرقی'),
-        ('AG', 'آذربایجان غربی'),
-        ('AR', 'اردبیل'),
-        ('ES', 'اصفهان'),
-        ('AL', 'البرز'),
-        ('IL', 'ایلام'),
-        ('BU', 'بوشهر'),
-        ('TH', 'تهران'),
-        ('CB', 'چهارمهال و بختیاری'),
-        ('KJ', 'خراسان جنوبی'),
-        ('KR', 'خراسان رضوی'),
-        ('KS', 'خراسان شمالی'),
-        ('KZ', 'خوزستان'),
-        ('ZN', 'زنجان'),
-        ('SM', 'سمنان'),
-        ('SB', 'سیستان و بلوچستان'),
-        ('FR', 'فارس'),
-        ('QZ', 'قزوین'),
-        ('QM', 'قم'),
-        ('KD', 'کردستان'),
-        ('KN', 'کرمان'),
-        ('KM', 'کرمانشاه'),
-        ('KB', 'کهگیلویه و بویراحمد'),
-        ('GL', 'گلستان'),
-        ('GI', 'گیلان'),
-        ('LR', 'لرستان'),
-        ('MZ', 'مازندران'),
-        ('MK', 'مرکزی'),
-        ('HR', 'هرمزگان'),
-        ('HM', 'همدان'),
-        ('YZ', 'یزد'),
-    )
 
-    city = models.CharField(max_length=120, choices=CITY_CHOICES)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True)
     postal_code = models.CharField(max_length=10)
     full_address = models.TextField(max_length=200)
     active = models.BooleanField(default=True)

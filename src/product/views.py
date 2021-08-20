@@ -32,9 +32,14 @@ def product_detail(request, pk):
 
         order, created = Order.objects.get_or_create(customer=customer, status='ordering')
         shopping_cart, created = ShoppingCart.objects.get_or_create(order=order, item=book)
-        shopping_cart.quantity = request.POST['quantity']
+
+        shopping_cart.quantity += int(request.POST['quantity'])
+
         if int(shopping_cart.quantity) > book.inventory:
             return render(request, 'book_detail.html', {'book': book, 'inventory_message': 'موجودی کتاب کافی نیست'})
+        elif int(shopping_cart.quantity) == 0:
+            return render(request, 'book_detail.html', {'book': book, 'inventory_message': 'مقدار وارد شده 0 می باشد'})
+        shopping_cart.update_quantity(shopping_cart.quantity)
         shopping_cart.save()
         return redirect('cart')
 

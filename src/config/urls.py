@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('pages.urls')),
     path('', include('product.urls')),
     path('', include('order.urls')),
+    path('', include('discount.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()

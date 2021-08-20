@@ -18,7 +18,7 @@ class AmountPercentDiscount(models.Model):
         ('Amount', 'Amount'),
     )
     type = models.CharField(choices=DISCOUNT_TYPE_CHOICES, max_length=7)
-    percent = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)],blank=True, null=True)
+    percent = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True, null=True)
     amount = models.FloatField(blank=True, null=True)
     max_discount = models.FloatField(blank=True, null=True)
     active = models.BooleanField(default=False)
@@ -49,13 +49,13 @@ class CodeDiscount(models.Model):
     """
     کد تخفیف که یک درصدی به آن داده شده و هرکاربر با وارد کردن کد، روی کل خریدش تخفیف میگیرد
     code: کد تخفیف
-    value: مقدار درصد تخفیف
+    discount: مقدار درصد تخفیف
     start_date: شروع تاریخ تخفیف
     end_date: پایان تخفیف
     active: اکتیو بودن یا نبودن
     """
     code = models.CharField(max_length=10, primary_key=True)
-    value = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)])
+    discount = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)])
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     active = models.BooleanField(default=False)
@@ -72,9 +72,13 @@ class CodeDiscount(models.Model):
         if self.active:
             self.active = False
 
-    def calculate_price(self, total_price):
-        final_price = total_price * self.value
+    def calculate_discount(self, total_price):
+        final_price = total_price * self.discount
         return final_price
+
+    @property
+    def discount_value(self):
+        return int(self.discount * 100)
 
     def __str__(self):
         return self.code

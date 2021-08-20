@@ -1,8 +1,13 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
+
+from discount.forms import CodeDiscountForm
 from discount.models import CodeDiscount
+from product.models import Book
 from users.models import Customer
 from .models import ShoppingCart, Order
 
@@ -13,6 +18,7 @@ def cart(request):
     :param request:
     :return:
     """
+    # print('book_id', book_id)
     if request.user.is_anonymous:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
@@ -20,8 +26,36 @@ def cart(request):
         customer = request.user
 
     order, created = Order.objects.get_or_create(customer=customer, status='ordering')
+    add = request.GET.get('add')
+    remove = request.GET.get('remove')
+    # print('book_id', book_id)
+    # book = Book.objects.get(id=book_id)
+    # print('book', book)
+    # shopping_cart_item = ShoppingCart.objects.get(order=order, item=book)
+    # print('shopping_cart_item', shopping_cart_item)
+    # if add == '+':
+    #     shopping_cart_item.quantity += 1
+    # elif remove == '_':
+    #     shopping_cart_item.quantity -= 1
+    #     if shopping_cart_item.quantity == 0:
+    #         shopping_cart_item.remove_from_cart()
+    input_code = request.GET.get('code')
+    print('code: ', input_code)
+    code_message = ''
+    price_with_code = order.total_price_with_discount
+    now = timezone.now()
+    if input_code:
+        try:
+            code_discount = CodeDiscount.objects.get(code__exact=input_code, start_date__lte=now, end_date__gte=now,
+                                                     active=True)
+            # if code_discount:
+            code_message = 'کد اعمال شد'
+            price_with_code = order.price_with_code(code_discount)
+        except ObjectDoesNotExist:
+            code_message = 'کد اشتباه است'
+            price_with_code = order.total_price_with_discount
 
-    context = {'order': order}
+    context = {'order': order, 'code_message': code_message, 'price_with_code': price_with_code}
 
     return render(request, 'cart.html', context)
 
@@ -34,22 +68,6 @@ def delete_product(request, pk):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-def check_discount_code(request):
-    input_code = request.GET.get('code')
-    total_price = request.GET.get('total')
-    print('total_price:', total_price)
-    code = CodeDiscount.objects.filter(code__exact=input_code)
-    if code.exists():
-        code_exist = CodeDiscount.objects.get(code__exact=input_code)
-        if code_exist.active and code_exist.start_date < timezone.now() < code_exist.end_date:
-            messages.success(request, 'کد تخفیف اعمال شد')
-            code_value = int(code_exist.value * 100)
-
-            # code_total = code_exist.calculate_price(total_price=total_price)
-            return render(request, 'cart.html',
-                          {'code_result': 'کد تخفیف اعمال شد', 'code_value': code_value})
-        else:
-            return render(request, 'cart.html', {'code_result': 'کد اشتباه است'})
-    else:
-        messages.error(request, 'کد اشتباه است')
-        return render(request, 'cart.html', {'code_result': 'کد اشتباه است'})
+@login_required(login_url='login.html')
+def checkout(request):
+    return render(request, 'checkout.html')
