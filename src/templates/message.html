@@ -1,0 +1,21 @@
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{#{% if messages %}#}
+{#    {% for message in messages %}#}
+{#        {% if message.tags == 'success' %}#}
+{#            <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>#}
+{#        {% elif message.tags == 'info' %}#}
+{#            <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>#}
+{#        {% elif message.tags == 'warning' %}#}
+{#            <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>#}
+{#        {% elif message.tags == 'error' %}#}
+{#            <script type=text/javascript>iziToast.error({message: '{{ message }}'});</script>#}
+{#        {% endif %}#}
+{#    {% endfor %}#}
+{#{% endif %}#}

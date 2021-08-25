@@ -12,8 +12,8 @@
                 <div class="col-lg-12">
                     <h2>Shop</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Shop</li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">خانه</a></li>
+                        <li class="breadcrumb-item active">کتاب ها</li>
                     </ul>
                 </div>
             </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="filter-sidebar-left">
                 <div class="title-left">
-                    <h3>Categories</h3>
+                    <h3>دسته بندی ها</h3>
                 </div>
                 <div class="list-group list-group-collapse list-group-sm list-group-tree"
                      id="list-group-men" data-children=".sub-men">
@@ -209,7 +209,7 @@
                                     <div class="box-img-hover">
                                         {% if book.discount is not None %}
                                             <div class="type-lb">
-                                                <p class="sale">Sale</p>
+                                                <p class="sale">تخفیف</p>
                                             </div>
                                         {% endif %}
                                         <img src="{{ book.image.url }}" class="img-fluid" alt="Image">
@@ -217,7 +217,7 @@
                                             <ul>
                                                 <li><a href="{{ book.get_absolute_url }}" data-toggle="tooltip"
                                                        data-placement="right"
-                                                       title="View"><i class="fas fa-eye"></i></a></li>
+                                                       title="جزئیات"><i class="fas fa-eye"></i></a></li>
                                                 <li><a href="#" data-toggle="tooltip" data-placement="right"
                                                        title="Compare"><i class="fas fa-sync-alt"></i></a>
                                                 </li>
@@ -225,7 +225,7 @@
                                                        title="Add to Wishlist"><i class="far fa-heart"></i></a>
                                                 </li>
                                             </ul>
-                                            <a class="cart" href="#">Add to Cart</a>
+                                            <a class="cart" href="{% url 'cart' %}">افزودن به سبد خرید</a>
                                         </div>
                                     </div>
                                     <div class="why-text">

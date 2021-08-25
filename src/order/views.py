@@ -69,11 +69,40 @@ def delete_product(request, pk):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@login_required(login_url='login.html')
+@login_required(login_url='users:login')
 def checkout(request):
     order, created = Order.objects.get_or_create(customer=request.user, status='ordering')
     code = order.code
     print('code:', code)
     price_with_code = order.price_with_code(code)
     discount = order.code_value(code)
-    return render(request, 'checkout.html', {'order': order, 'price_with_code': price_with_code, 'discount': discount})
+    address = order.address
+    print(address)
+    return render(request, 'checkout.html', {
+        'order': order,
+        'price_with_code': price_with_code,
+        'discount': discount,
+        'address': address
+    })
+
+
+@login_required(login_url='users:login')
+def user_orders(request):
+    user = request.user
+    order = Order.objects.filter(customer=user)
+    for orders in order.all():
+        final_price = orders.price_with_code()
+        print('final_price', final_price)
+
+        # for item in orders.order_items():
+        #     item.quantity_price
+
+    return render(request, 'user_orders.html', {'order': order})
+
+
+@login_required()
+def submit_order(request):
+    order = Order.objects.get(customer=request.user, status='ordering')
+    order.change_status()
+    # order.clear_cart()
+    return render(request, 'end_order.html')

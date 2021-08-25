@@ -13,7 +13,14 @@ class BookListView(generic.ListView):
     template_name = 'book_list.html'
 
 
-def product_detail(request, pk):
+def book_after_search(request):
+    if request.method == 'GET':
+        books = request.GET.get()
+        print(books)
+        return render(request, 'search_results.html')
+
+
+def product_detail(request, pk=None):
     """
     اگر در صفحه جزیات محصول، متد پست باشد، به صفحه سبد خرید هدایت خواهیم شد
     اگر متد get باشد، اطلاعات کتاب به همان صفحه فرستاده می شود

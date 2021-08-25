@@ -39,7 +39,24 @@
                         <p class="available-stock"><span> موجودی {{ book.inventory }} عدد</span>
                         <p>
                         <h4>معرفی کتاب</h4>
-                        <p class="text-justify">{{ book.description }}</p>
+                        {#                        <p class="text-justify">{{ book.description|truncatewords:15 }}</p>#}
+                        {% if book.description|wordcount > 56 %}
+                            <details>
+                                <summary class="text-justify"
+                                         style="display: inline">{{ book.description|slice:":120" }}...
+                                </summary>
+                                <p class="text-justify" style="display: inline">{{ book.description|slice:"121:" }}</p>
+                            </details>
+                        {% else %}
+                            <p class="text-justify">
+                                {{ book.description|safe|linebreaks }}
+                            </p>
+                        {% endif %}
+                        <br>
+                        <h4>نویسندگان:</h4>
+                        {% for auther in book.author.all %}
+                            <p>{{ auther }}</p>
+                        {% endfor %}
                         <ul>
                             <li>
                                 <div class="form-group size-st">
@@ -66,17 +83,21 @@
                                     <li>
                                         <div class="form-group quantity-box">
                                             <label for="quantity" class="control-label">تعداد</label>
-                                            <input id="quantity" name="quantity" class="form-control" value="0" min="0" max="20" type="number">
+                                            <input id="quantity" name="quantity" class="form-control" value="0" min="0"
+                                                   max="30" type="number">
                                         </div>
                                     </li>
                                     <li>
                                         <div>
-                                            <input type="submit" class="btn hvr-hover" data-fancybox-close=""
+                                            <input type="submit" id="submit_btn" class="btn hvr-hover mt-4"
+                                                   data-fancybox-close=""
                                                    value="افزودن به سبد خرید">
                                         </div>
                                     </li>
                                     <li>
-                                        <p class="text-danger">{{ inventory_message }}</p>
+                                        {% if inventory_message %}
+                                            <p class="text-danger" id="show_message"></p>
+                                        {% endif %}
                                     </li>
                                 </ul>
                             </form>
@@ -136,3 +157,24 @@
     </div>
     <!-- End Cart -->
 {% endblock content %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            var toast = document.querySelector('#submit_btn'); // Selector of your toast
+            iziToast.error({
+                message: '{{ inventory_message }}'
+            }, toast);
+
+
+            $("#submit_btn").onclick("submit", function (e) {
+                $.ajax({
+                    url:{% url 'cart' %}
+                });
+                e.preventDefault();
+                //Code: Action (like ajax...)
+            })
+        })
+
+    </script>
+{% endblock script %}

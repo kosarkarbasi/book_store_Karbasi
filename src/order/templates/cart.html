@@ -57,7 +57,7 @@
                                             {% ifequal item.item.discount.type|stringformat:'s' 'Percent' %}
                                                 <p>{{ item.discount|intcomma }} درصد</p>
                                             {% else %}
-                                                <p>{{ item.discount|intcomma }} ریال</p>
+                                                <p>{{ item.item.discount.discount_value|intcomma }} ریال</p>
                                             {% endifequal %}
                                         {% else %}
                                             <p>0</p>

@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Customer, User
+from users.models import Customer, User, Address
 from product.models import Book
 from discount.models import AmountPercentDiscount, CodeDiscount
 
@@ -26,7 +26,7 @@ class Order(models.Model):
 
     @property
     def address(self):
-        active_address = Customer.objects.filter(pk=self.customer_id).filter(addresses__active=True)
+        active_address = Address.objects.get(user=self.customer, active=True)
         # active_address = Customer.active_address
         return active_address
 
@@ -65,12 +65,16 @@ class Order(models.Model):
         else:
             return False
 
+    def change_status(self):
+        self.status = 'submit'
+        self.save()
+
     def save_code(self, code):
         self.code = code
         self.save()
 
-    def price_with_code(self, code):
-        self.code = code
+    def price_with_code(self, code=None):
+        # self.code = code
         if self.code:
             final_price = self.total_price_with_discount - self.code.calculate_discount(self.total_price_with_discount)
             return int(final_price)
@@ -79,6 +83,13 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+    def order_items(self):
+        return self.shoppingcart_set.all()
+
+    def clear_cart(self):
+        self.shoppingcart_set.all().delete()
+        self.save()
 
     class Meta:
         verbose_name = 'سفارش'

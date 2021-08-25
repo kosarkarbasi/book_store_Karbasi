@@ -3,16 +3,10 @@ from django.utils.html import format_html
 
 from .models import Customer, Personnel, Admin, Address, User, City, Province
 
-admin.site.register(User)
-
-
-# admin.site.register(City)
-# admin.site.register(Province)
-
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ("city", "postal_code", 'user', 'active')
+    list_display = ("city", "postal_code", 'user', 'active',)
     # readonly_fields = ('password',)
 
 
@@ -36,10 +30,19 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(Personnel)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar", 'device')
+    fields = ("email", 'phone_number', "avatar", "type", 'device')
+    readonly_fields = ['date_joined']
 
 
 @admin.register(Admin)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar", 'device')
+    fields = ("email", 'phone_number', "avatar", "type", 'device')
+    readonly_fields = ['date_joined']
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ("email", "type", 'date_joined')
+    fields = ("email", 'phone_number', "avatar", "type", 'device')
+    readonly_fields = ['date_joined']

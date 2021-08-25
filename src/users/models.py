@@ -45,11 +45,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default='avatar.png')
-    phone_number = PhoneNumberField(max_length=13, blank=True, null=True)
+    phone_number = PhoneNumberField(max_length=11, blank=True, null=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+    # A list of the field names that will be prompted for
+    # when creating a user via the createsuperuser management command.
     REQUIRED_FIELDS = []
 
     class Meta:
