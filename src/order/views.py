@@ -134,3 +134,9 @@ def best_seller(request):
         # .order_by(Sum(F('-shoppingcart__quantity')))
     a = Order.objects.select_related( 'shoppingcart')
     return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
+# select item_id, count(item_id) from public.order_shoppingcart as cart
+# inner join public.order_order as orders
+# on (cart.order_id=orders.id)
+# where orders.status = 'submit'
+# group by item_id
+# order by count(item_id)
