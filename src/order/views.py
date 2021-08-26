@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from discount.models import CodeDiscount
 from users.models import Customer
@@ -93,6 +93,9 @@ def checkout(request):
     price_with_code = order.price_with_code()
     discount = order.code_value(code)
     address = order.address
+    if address is None:
+        messages.error(request, 'لطفا یک آدرس وارد کنید')
+        return redirect('users:user_addresses')
     return render(request, 'checkout.html', {
         'order': order,
         'price_with_code': price_with_code,

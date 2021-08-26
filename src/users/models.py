@@ -224,7 +224,7 @@ class Address(models.Model):
                              null=True)
     postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
     full_address = models.TextField(max_length=200)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

@@ -14,6 +14,7 @@ from order.models import Order
 from product.models import Book
 from .forms import SignUpForm, AddressForm
 from .models import User, Customer, Address
+from django.contrib.auth.models import Group
 
 
 def registration_view(request):
@@ -116,7 +117,7 @@ def add_address(request):
             for addresses in previous_addresses.all():
                 addresses.active = False
                 addresses.save()
-            return redirect('users:profile')
+            return redirect('users:user_addresses')
         else:
             messages.error(request, 'لطفا اطلاعات را درست وارد کنید')
     else:
@@ -189,3 +190,19 @@ def admin_dashboard(request):
     return render(request, 'panels/admin_dashboard.html', {
         'month_orders': month_orders,
     })
+
+
+# -------------------------------------------------------------------
+@login_required(login_url='users:login')
+def create_personnel(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        personnel = User.objects.create_user(email=email, password=password, type='PERSONNEL')
+        personnel.is_staff = True
+        personnel_group = Group.objects.get(name__exact='Personnel')
+        personnel.save()
+        personnel_group.user_set.add(personnel)
+        messages.success(request, 'کابر با موفقیت ایجاد شد')
+        return render(request, 'panels/create_personnel.html')
+    return render(request, 'panels/create_personnel.html')

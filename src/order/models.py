@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from users.models import Customer, User, Address
 from product.models import Book
@@ -29,8 +30,11 @@ class Order(models.Model):
         """
         :return: active address of customer
         """
-        active_address = Address.objects.get(user=self.customer, active=True)
+        try:
+            active_address = Address.objects.get(user=self.customer, active=True)
         # active_address = Customer.active_address
+        except ObjectDoesNotExist:
+            active_address = None
         return active_address
 
     @property

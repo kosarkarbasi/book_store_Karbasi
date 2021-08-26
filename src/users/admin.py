@@ -46,7 +46,7 @@ class CustomerAdmin(admin.ModelAdmin):
     readonly_fields = ['date_joined']
 
 
-# admin.site.register(User)
+admin.site.register(User)
 
 
 # class CustomUserAdmin(UserAdmin):

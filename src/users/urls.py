@@ -14,7 +14,8 @@ from .views import (registration_view,
                     ProfileUpdateView,
                     AddressDeleteView,
                     delete_address,
-                    admin_dashboard, )
+                    admin_dashboard,
+                    create_personnel)
 
 app_name = 'users'
 
@@ -28,6 +29,8 @@ urlpatterns = [
     path('profile/update/<int:pk>', ProfileUpdateView.as_view(), name='update_profile'),
 
     path('admin/panel/', admin_dashboard, name='admin_dashboard'),
+
+    path('create/personnel/', create_personnel, name='create_personnel'),
 
     path('login/', login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/accounts/login'), name='logout'),
