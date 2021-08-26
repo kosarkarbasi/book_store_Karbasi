@@ -3,8 +3,13 @@ import product.views as views
 
 urlpatterns = [
     path('books/', views.BookListView.as_view(), name='book_list'),
-    # path(r'books/detail/(?P<slug>[-\w]+)/', views.product_detail, name='book_detail'),
     path(r'books/detail/<int:pk>', views.product_detail, name='book_detail'),
     path('books/search/', views.book_after_search, name='book_search'),
-    # path(r'books/delete/<int:pk>', views.delete_product, name='book_delete'),
+    path('category/<int:pk>', views.category, name='category'),
+    path('author/<int:pk>', views.author, name='author'),
+
+    path('create/book/', views.BookCreateView.as_view(), name='book_create'),
+    path('update/book/<int:pk>/', views.BookUpdateView.as_view(), name='book_update'),
+
+    path('create/author/', views.AuthorCreateView.as_view(), name='author_create'),
 ]

@@ -9,10 +9,22 @@ from discount.models import AmountPercentDiscount
 
 class Category(models.Model):
     """
-    دسته بندی کتاب
-    name: نام دسته بندی
+    model for category of book
+    name: name of category
     """
     name = models.CharField(max_length=20, unique=True)
+
+    @property
+    def check_category(self):
+        """
+        used in menubar in book_list.html
+        :return: True/False
+        """
+        for book in Book.objects.all():
+            if self.name in book.category.all().values_list('name', flat=True):
+                return True
+            else:
+                return False
 
     def __str__(self):
         return self.name
@@ -24,9 +36,9 @@ class Category(models.Model):
 
 class Author(models.Model):
     """
-    مشخصات نویسنده کتاب
-    first_name: نام نویسنده
-    last_name: نام خانوادگی نویسنده
+    model of Author of books
+    first_name: first name of author
+    last_name: last name of author
     """
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -46,34 +58,42 @@ class Author(models.Model):
 class Book(models.Model):
     """
     fields:
-    title: اسم کتاب
-    author: نویسنده کتاب
-    category: دسته بندی کتاب
-    inventory: موجودی کتاب
-    price: قیمت کتاب
-    created: تاریخ ایجاد کتاب
-    image: عکس کتاب
-    score: امتیاز کتاب
+    title: name of book
+    author: author of book
+    category: category of book - ForeignKey
+    inventory: inventory of book
+    price: price of book
+    created: date of creation of book
+    image: image of book
+    score: score of book
     """
     title = models.CharField(max_length=100)
     author = models.ManyToManyField(Author, related_name='authors')
-    category = models.ManyToManyField(Category, related_name='categories')
+    category = models.ManyToManyField(Category, related_name='books')
     description = models.TextField(max_length=1200, null=True, blank=True)
     inventory = models.IntegerField()
     price = models.PositiveBigIntegerField()
     discount = models.ForeignKey(AmountPercentDiscount, on_delete=models.CASCADE, null=True, blank=True)
-    slug = models.SlugField(null=False, unique=True, allow_unicode=True)
+    # slug = models.SlugField(null=False, unique=True, allow_unicode=True)
     created = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='books/')
     score = models.PositiveSmallIntegerField(
         choices=(
-            (1, "★☆☆☆☆"),
-            (2, "★★☆☆☆"),
-            (3, "★★★☆☆"),
-            (4, "★★★★☆"),
-            (5, "★★★★★"),
-        )
+            (1, 1),
+            (2, 2),
+            (3, 3),
+            (4, 4),
+            (5, 5),
+        ),
+        null=True,
+        blank=True
     )
+
+    # (1, "★☆☆☆☆"),
+    # (2, "★★☆☆☆"),
+    # (3, "★★★☆☆"),
+    # (4, "★★★★☆"),
+    # (5, "★★★★★"),
 
     class Meta:
         verbose_name = 'کتاب'
@@ -86,13 +106,13 @@ class Book(models.Model):
         # return reverse('book_detail', kwargs={'slug': self.slug})
         return reverse('book_detail', kwargs={'pk': self.pk})
 
-    def save(self, *args, **kwargs):
-        """
-        save method for slug
-        """
-        if not self.slug:
-            self.slug = slugify(self.title)
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     """
+    #     save method for slug
+    #     """
+    #     if not self.slug:
+    #         self.slug = slugify(self.title)
+    #     return super().save(*args, **kwargs)
 
     def update_count(self, quantity):
         """
@@ -124,17 +144,17 @@ class Book(models.Model):
                 self.price = new_price
                 return int(new_price)
         else:
-            return self.price
+            return int(self.price)
 
 
 class Comment(models.Model):
     """
-    writer: نویسنده کامنت
-    book: نام کتاب
-    score: نمره کتاب
-    title: عنوان کامنت
-    content: محتوای کامنت
-    timestamp: زمان گذاشتن کامنت
+    writer: writer of comment - ForeignKey
+    book: name of book - ForeignKey
+    score: score of book
+    title: title of comment
+    content: content of comment
+    timestamp: date and time of comment
     """
     writer = models.ForeignKey(
         settings.AUTH_USER_MODEL,

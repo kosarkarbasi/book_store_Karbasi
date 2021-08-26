@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db import models
 from users.models import Customer, User, Address
 from product.models import Book
@@ -6,14 +7,13 @@ from discount.models import AmountPercentDiscount, CodeDiscount
 
 class Order(models.Model):
     """
-    اوردر نهایی که کاربر تمامی آیتم هارا انتخاب کرده و ثبت یا سفارش میکند
+    The final order that user select all items and order or submit it
     STATUS_CHOICES
-    items: آیتم های انتخابی
-    customer_id: آیدی مشتری
-    code: کد تخفیف
-    status: وصعیت ثبت یا سفارش
-    start_date: تاریخ تشکیل اوردر
-    order_date: تاریخ دادن اوردر
+    items: selected items --- ForeignKey
+    customer: owner of order ---  ForeignKey
+    code: discount code ---  ForeignKey
+    status: status of order --- ordering / submit
+    order_date: datetime for creation of order
     """
     STATUS_CHOICES = [('ordering', 'سفارش'), ('submit', 'ثبت')]
     # items = models.ManyToManyField(ShoppingCart)
@@ -26,33 +26,53 @@ class Order(models.Model):
 
     @property
     def address(self):
+        """
+        :return: active address of customer
+        """
         active_address = Address.objects.get(user=self.customer, active=True)
         # active_address = Customer.active_address
         return active_address
 
     @property
     def total_price_with_discount(self):
+        """
+        :return: total price of shopping cart with calculate quantity and discount
+        """
         order_items = self.shoppingcart_set.all()
         total = sum([item.item.calculate_price_after_discount() * item.quantity for item in order_items])
         return int(total)
 
     @property
-    def total_price_wihout_discount(self):
+    def total_price_without_discount(self):
+        """
+        :return: total price of shopping cart with calculate quantity but without discount
+        """
         order_items = self.shoppingcart_set.all()
         total = sum([item.item.price * item.quantity for item in order_items])
         return int(total)
 
     @property
     def total_discount(self):
-        return self.total_price_wihout_discount - self.total_price_with_discount
+        """
+        :return: value of discount on items
+        """
+        return self.total_price_without_discount - self.total_price_with_discount
 
     @property
     def cart_items(self):
+        """
+        :return: number of items in shopping cart
+        """
         order_items = self.shoppingcart_set.all()
         total = sum([item.quantity for item in order_items])
         return total
 
     def code_value(self, code):
+        """
+        calculate amount of code discount that user entered
+        :param code: discount code that user entered
+        :return: value of discount code
+        """
         if code:
             return self.code.discount_value
         else:
@@ -60,20 +80,34 @@ class Order(models.Model):
 
     @property
     def check_code(self):
+        """
+        check discount code and if it's valid, return True, otherwise, return False
+        """
         if self.code.active:
             return True
         else:
             return False
 
     def change_status(self):
+        """
+        change status of order form 'ordering' to 'submit' and save it
+        """
         self.status = 'submit'
         self.save()
 
     def save_code(self, code):
+        """
+        save code that user entered
+        :param code: discount code that user entered
+        """
         self.code = code
         self.save()
 
-    def price_with_code(self, code=None):
+    def price_with_code(self):
+        """
+        calculate the final price with code discount and AmountPercent discount
+        :return: final price of order
+        """
         # self.code = code
         if self.code:
             final_price = self.total_price_with_discount - self.code.calculate_discount(self.total_price_with_discount)
@@ -85,11 +119,10 @@ class Order(models.Model):
         return str(self.pk)
 
     def order_items(self):
+        """
+        :return: items of order
+        """
         return self.shoppingcart_set.all()
-
-    def clear_cart(self):
-        self.shoppingcart_set.all().delete()
-        self.save()
 
     class Meta:
         verbose_name = 'سفارش'
@@ -98,15 +131,11 @@ class Order(models.Model):
 
 class ShoppingCart(models.Model):
     """
-    سفارشات کاربر در سبد خریدش، در این مدل قرار می گیرد
-    کاربر می تواند آیتمی را حذف یا اضافه کند
+    every item that user order is locate in this model
     fields:
-    item: آن کتابی که کاربر برای افزودن به سبد خرید انتخاب کرده است
-    quantity: تعداد انتخابی از آن کتاب
-    customer: کاربری که آن کتاب را انتخاب کرده است که در حالت پیشفرض مهمان است
-    discount: مقدار تخفیف روی آن کتاب
-    price: قیمت کتاب بدون در نظر گرفتن تخفیف
-    cost: هزینه نهایی کتاب
+    item: item that user choose to add to cart --- ForeignKey
+    quantity: quantity of item
+    order: number of order of the item --- ForeignKey
     """
     item = models.ForeignKey(Book, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0, null=True, blank=True)
@@ -114,16 +143,19 @@ class ShoppingCart(models.Model):
 
     @property
     def discount(self):
+        """
+        :return: discount value of the item
+        """
         discount = self.item.discount.discount_value * 100
         return int(discount)
 
     @property
     def total_cost(self):
+        """
+        :return: price of the item after discount
+        """
         total_cost = self.item.calculate_price_after_discount()
         return total_cost
-
-    def update_quantity(self, quantity):
-        self.quantity = quantity
 
     @property
     def quantity_price(self):
@@ -132,11 +164,14 @@ class ShoppingCart(models.Model):
         :return: price(int)
         """
         price = self.item.calculate_price_after_discount() * self.quantity
-        return int(price)
+        return price
 
-    def remove_from_cart(self):
-        self.delete()
-        return 'done'
+    def update_quantity(self, quantity):
+        """
+        update and save the quantity of item
+        :param quantity: entered quantity of item by user
+        """
+        self.quantity = quantity
 
     def __str__(self):
         return self.item.title

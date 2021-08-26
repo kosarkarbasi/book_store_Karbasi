@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="m-5 p-2">
+        <div class="container m-5">
+            <div class="text-right">
+                {% include 'message.html' %}
+            </div>
+            {% for address in addresses %}
+                <div class="card mt-2 text-right">
+                    <div class="card-header">
+                        آدرس
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">استان {{ address.province }}، شهر {{ address.city }}</h4>
+                        <p class="card-text">{{ address.full_address }}</p>
+                        <p class="card-text">کد پستی: {{ address.postal_code }}</p>
+
+                        {% if address.active %}
+                            <p class="card-text" dir="rtl">وضعیت:
+                            <span class="text-success">فعال</span>
+                        {% else %}
+                            <a href="{% url 'users:activate_address' address.postal_code %}" class="btn btn-info">انتخاب
+                                به عنوان آدرس فعلی</a>
+                            <a href="{% url 'users:delete_address' address.pk %}" class="btn btn-danger">حذف آدرس</a>
+                        {% endif %}
+
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="card mt-2 text-right mb-5">
+                <a href="{% url 'users:add_address' %}" class="btn btn-success p-2">اضافه کردن
+                    آدرس جدید</a>
+                <a href="{% url 'checkout' %}" class="btn btn-danger p-2">نهایی کردن سبد خرید</a>
+            </div>
+        </div>
+
+    </section>
+{% endblock content %}

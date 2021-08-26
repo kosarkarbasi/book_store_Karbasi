@@ -11,12 +11,16 @@ admin.site.register(Category)
 
 @admin.register(Book)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("title", 'price', 'discount', 'slug')
+    list_display = ("title", 'price', 'discount', 'inventory')
+    list_editable = ['inventory']
     # prepopulated_fields = {'slug': ('title',)}
-
+    readonly_fields = ['created', ]
     actions = ['add_inventory', ]
 
     def add_inventory(self, request, queryset):
+        """
+        add 2 inventory to selected items
+        """
         updated = queryset.update(inventory=F('inventory') + 2)
         self.message_user(request, '2 more inventory added to selected books', messages.SUCCESS)
 
@@ -24,7 +28,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Public information', {
-            'fields': ('title', 'price', 'discount', 'inventory')
+            'fields': ('title', 'description', 'price', 'discount', 'inventory', 'image', 'score', 'created',)
         }),
 
         ('Details', {

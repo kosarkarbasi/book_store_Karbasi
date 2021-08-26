@@ -1,22 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
-
-from discount.forms import CodeDiscountForm
 from discount.models import CodeDiscount
-from product.models import Book
 from users.models import Customer
 from .models import ShoppingCart, Order
 
 
 def cart(request):
     """
-    یک آبجت از order برای کاستومر می سازد و اطلاعات آن را به صفحه cart.html پاس می دهد
-    :param request:
-    :return:
+    this method create an object from customer's order with 'ordering' status
+    then check the validation of code that user interred and if the code valid, save it to order's code
+    then if everything is ok, pass order and final price with code to cart.html
     """
     # print('book_id', book_id)
     if request.user.is_anonymous:
@@ -40,44 +38,61 @@ def cart(request):
     #     if shopping_cart_item.quantity == 0:
     #         shopping_cart_item.remove_from_cart()
     input_code = request.GET.get('code')
-    code_message = ''
     price_with_code = order.total_price_with_discount
     now = timezone.now()
     if input_code:
         try:
             code_discount = CodeDiscount.objects.get(code__exact=input_code, start_date__lte=now, end_date__gte=now,
                                                      active=True)
-            # if code_discount:
             order.save_code(code_discount)
-            print('order.code', order.code)
-            code_message = 'کد اعمال شد'
+            messages.success(request, 'کد اعمال شد')
             price_with_code = order.price_with_code(code_discount)
         except ObjectDoesNotExist:
-            code_message = 'کد اشتباه است'
+            messages.error(request, 'کد اشتباه است')
             price_with_code = order.total_price_with_discount
 
-    context = {'order': order, 'code_message': code_message, 'price_with_code': price_with_code}
+    context = {'order': order, 'price_with_code': price_with_code}
 
     return render(request, 'cart.html', context)
 
 
 def delete_product(request, pk):
+    """
+    this method calls when customer wants to delete cart items in cart
+    :param request: request
+    :param pk: primary key of the item that user wants to delete form cart
+    :return: cart.html page
+    """
     order_item = ShoppingCart.objects.get(id=pk)
     order_item.delete()
-    # return render(request, 'cart.html')
     # redirect to same page
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required(login_url='users:login')
 def checkout(request):
+    """
+    this method get the ordering order of customer and check the quantities
+    if everything be ok, it pass the values to template for checkout
+    """
     order, created = Order.objects.get_or_create(customer=request.user, status='ordering')
+
+    # check item inventory with item quantity in cart
+    shopping_cart = order.shoppingcart_set.all()
+    for cart_item in shopping_cart:
+        if 0 < cart_item.item.inventory < cart_item.quantity:
+            messages.error(request, f'موجودی {cart_item.item.title}، {cart_item.item.inventory} عدد است')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        elif cart_item.item.inventory == 0:
+            messages.error(request, f'موجودی {cart_item.item.title} تمام شده است ')
+            cart_item.remove_from_cart()
+            return render(request, 'cart.html')
+    # end check
+
     code = order.code
-    print('code:', code)
-    price_with_code = order.price_with_code(code)
+    price_with_code = order.price_with_code()
     discount = order.code_value(code)
     address = order.address
-    print(address)
     return render(request, 'checkout.html', {
         'order': order,
         'price_with_code': price_with_code,
@@ -88,21 +103,26 @@ def checkout(request):
 
 @login_required(login_url='users:login')
 def user_orders(request):
+    """
+    this method get current customer orders and pass in to user_orders.html template
+    """
     user = request.user
     order = Order.objects.filter(customer=user)
-    for orders in order.all():
-        final_price = orders.price_with_code()
-        print('final_price', final_price)
-
-        # for item in orders.order_items():
-        #     item.quantity_price
-
     return render(request, 'user_orders.html', {'order': order})
 
 
 @login_required()
 def submit_order(request):
+    """
+    this method call when customer wants to checkout and pay for items
+    it changes status of order form 'ordering' to 'submit'
+    so the items will no longer in shopping cart
+    """
     order = Order.objects.get(customer=request.user, status='ordering')
     order.change_status()
-    # order.clear_cart()
     return render(request, 'end_order.html')
+
+
+def most_sold(request):
+    # Order.objects.annotate(sell=Sum()).annotate().order_by()
+    pass

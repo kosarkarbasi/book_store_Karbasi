@@ -30,154 +30,165 @@
 
 {% block content %}
     <div class="theme-red">
-        <!-- Back to top button -->
-        <div class="btn-back_to_top">
-            <span class="ti-arrow-up"></span>
-        </div>
+    <!-- Back to top button -->
+    <div class="btn-back_to_top">
+        <span class="ti-arrow-up"></span>
+    </div>
 
-        <!-- Setting button -->
-        <div class="config">
-            <div class="template-config">
-                <!-- Settings -->
-                <div class="d-block">
-                    <button class="btn btn-fab btn-sm" id="sideel" title="Settings"><span class="ti-settings"></span>
-                    </button>
-                </div>
-                <!-- Puschase -->
-                <div class="d-block">
-                    <a href="https://macodeid.com/projects/virtual-folio/" class="btn btn-fab btn-sm"
-                       title="Get this template" data-toggle="tooltip" data-placement="left"><span
-                            class="ti-download"></span></a>
-                </div>
-                <!-- Help -->
-                <div class="d-block">
-                    <a href="#" class="btn btn-fab btn-sm" title="Help" data-toggle="tooltip"
-                       data-placement="left"><span
-                            class="ti-help"></span></a>
-                </div>
+    <!-- Setting button -->
+    <div class="config">
+        <div class="template-config">
+            <!-- Settings -->
+            <div class="d-block">
+                <button class="btn btn-fab btn-sm" id="sideel" title="Settings"><span class="ti-settings"></span>
+                </button>
             </div>
-            <div class="set-menu">
-                <p>Select Color</p>
-                <div class="color-bar" data-toggle="selected">
-                    <span class="color-item bg-theme-red selected" data-class="theme-red"></span>
-                    <span class="color-item bg-theme-blue" data-class="theme-blue"></span>
-                    <span class="color-item bg-theme-green" data-class="theme-green"></span>
-                    <span class="color-item bg-theme-orange" data-class="theme-orange"></span>
-                    <span class="color-item bg-theme-purple" data-class="theme-purple"></span>
-                </div>
-                <select class="custom-select d-block my-2" id="change-page">
-                    <option value="">Choose Page</option>
-                    <option value="index">Topbar</option>
-                    <option value="blog-topbar">Blog (Topbar)</option>
-                    <option value="index-2">Minibar</option>
-                    <option value="blog-minibar">Blog (Minibar)</option>
-                </select>
+            <!-- Puschase -->
+            <div class="d-block">
+                <a href="https://macodeid.com/projects/virtual-folio/" class="btn btn-fab btn-sm"
+                   title="Get this template" data-toggle="tooltip" data-placement="left"><span
+                        class="ti-download"></span></a>
+            </div>
+            <!-- Help -->
+            <div class="d-block">
+                <a href="#" class="btn btn-fab btn-sm" title="Help" data-toggle="tooltip"
+                   data-placement="left"><span
+                        class="ti-help"></span></a>
             </div>
         </div>
+        <div class="set-menu">
+            <p>Select Color</p>
+            <div class="color-bar" data-toggle="selected">
+                <span class="color-item bg-theme-red selected" data-class="theme-red"></span>
+                <span class="color-item bg-theme-blue" data-class="theme-blue"></span>
+                <span class="color-item bg-theme-green" data-class="theme-green"></span>
+                <span class="color-item bg-theme-orange" data-class="theme-orange"></span>
+                <span class="color-item bg-theme-purple" data-class="theme-purple"></span>
+            </div>
+            <select class="custom-select d-block my-2" id="change-page">
+                <option value="">Choose Page</option>
+                <option value="index">Topbar</option>
+                <option value="blog-topbar">Blog (Topbar)</option>
+                <option value="index-2">Minibar</option>
+                <option value="blog-minibar">Blog (Minibar)</option>
+            </select>
+        </div>
+    </div>
 
-        <div class="topbar-nav fixed-top">
+    <div class="topbar-nav fixed-top">
+        <div class="brand">
+            <img src="../assets/favicon.ico" alt="" width="30" height="30">
+        </div>
+        <h3 class="ml-1">Gram</h3>
+        <button class="btn-fab toggle-menu mr-3"><span class="ti-menu"></span></button>
+    </div>
+
+    <!-- Minibar -->
+    <div class="minibar">
+        <div class="header">
             <div class="brand">
-                <img src="../assets/favicon.ico" alt="" width="30" height="30">
-            </div>
-            <h3 class="ml-1">Gram</h3>
-            <button class="btn-fab toggle-menu mr-3"><span class="ti-menu"></span></button>
-        </div>
 
-        <!-- Minibar -->
-        <div class="minibar">
-            <div class="header">
-                <div class="brand">
-
-                </div>
-            </div>
-            <div class="content">
-                <ul class="main-menu">
-                    <li class="menu-item active">
-                        <a href="#home" class="menu-link">
-                            <span class="icon ti-home"></span>
-                            <span class="caption">Home</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#about" class="menu-link">
-                            <span class="icon ti-user"></span>
-                            <span class="caption">About</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#services" class="menu-link">
-                            <span class="icon ti-file"></span>
-                            <span class="caption">Service</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#portfolio" class="menu-link">
-                            <span class="icon ti-briefcase"></span>
-                            <span class="caption">Portfolio</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#blog" class="menu-link">
-                            <span class="icon ti-book"></span>
-                            <span class="caption">Blog</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#contact" class="menu-link">
-                            <span class="icon ti-location-pin"></span>
-                            <span class="caption">Contact</span>
-                        </a>
-                    </li>
-                </ul>
             </div>
         </div>
+        <div class="content">
+            <ul class="main-menu">
+                <li class="menu-item active">
+                    <a href="#home" class="menu-link">
+                        <span class="icon ti-home"></span>
+                        <span class="caption">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#about" class="menu-link">
+                        <span class="icon ti-user"></span>
+                        <span class="caption">About</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#services" class="menu-link">
+                        <span class="icon ti-file"></span>
+                        <span class="caption">Service</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#portfolio" class="menu-link">
+                        <span class="icon ti-briefcase"></span>
+                        <span class="caption">Portfolio</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#blog" class="menu-link">
+                        <span class="icon ti-book"></span>
+                        <span class="caption">Blog</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link">
+                        <span class="icon ti-location-pin"></span>
+                        <span class="caption">Contact</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-        <div class="vg-main-wrapper">
-            <div class="vg-page page-home" id="home"
-                 style="background-image: url('../../statics/users/profile/assets/img/bg_image_2.jpg');">
-                <div class="caption wow zoomInUp">
-                    <h1 class="fw-normal">خوش آمدید</h1>
-                    {% if user.first_name %}
-                        <h2 class="fw-medium fg-theme">{{ user.first_name }}</h2>
-                    {% else %}
-                        <h2 class="fw-medium fg-theme">{{ user.email }}</h2>
-                    {% endif %}
-                    <p class="tagline">پروفایل کاربری</p>
-                </div>
+    <div class="vg-main-wrapper">
+        <div class="text-right">
+            {% include 'message.html' %}
+        </div>
+        <div class="vg-page page-home" id="home"
+             style="background-image: url('../../statics/users/profile/assets/img/bg_image_2.jpg');">
+            <div class="caption wow zoomInUp">
+                <h1 class="fw-normal">خوش آمدید</h1>
+                {% if user.first_name %}
+                    <h2 class="fw-medium fg-theme">{{ user.first_name }}</h2>
+                {% else %}
+                    <h2 class="fw-medium fg-theme">{{ user.email }}</h2>
+                {% endif %}
+                <p class="tagline">پروفایل کاربری</p>
             </div>
+        </div>
 
-            <!-- Page About -->
-            <div class="vg-page page-about" id="about">
-                <!-- Profile -->
-                <div class="container py-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="img-place wow zoomIn">
-                                <img src="{{ user.avatar.url }}" alt="Photo Profile">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="caption wow fadeInRight">
-                                <p class="fg-theme fw-medium">مشخصات</p>
-                                <ul class="theme-list">
-                                    <li class="fg-dark"><b>Email: </b> {{ user.email }}</li>
-                                    {% if user.phone_number %}
-                                        <li class="fg-dark"><b>Phone Number: </b> {{ user.phone_number }}</li>
-                                    {% endif %}
-                                    {% if user.first_name %}
-                                        <li class="fg-dark"><b>First name: </b>{{ user.first_name }}</li>
-                                    {% endif %}
-                                    {% if user.last_name %}
-                                        <li class="fg-dark"><b>Last name: </b>{{ user.last_name }}</li>
-                                    {% endif %}
-                                    <li class="fg-dark"><b>Role: </b>{{ user.type }}</li>
-                                </ul>
-                                <button class="btn btn-theme btn-rounded">اضافه کردن آدرس</button>
-                                <button class="btn btn-theme btn-rounded">گزارش سفارشات</button>
-                            </div>
+        <!-- Page About -->
+        <div class="vg-page page-about" id="about">
+            <!-- Profile -->
+            <div class="container py-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="img-place wow zoomIn">
+                            <img src="{{ user.avatar.url }}" alt="Photo Profile">
                         </div>
                     </div>
-                </div> <!-- End profile -->
+                    <div class="col-md-6">
+                        <div class="caption wow fadeInRight">
+                            <p class="fg-theme fw-medium">مشخصات</p>
+                            <ul class="theme-list">
+                                <li class="fg-dark"><b>Email: </b> {{ user.email }}</li>
+                                {% if user.phone_number %}
+                                    <li class="fg-dark"><b>Phone Number: </b> {{ user.phone_number }}</li>
+                                {% endif %}
+                                {% if user.first_name %}
+                                    <li class="fg-dark"><b>First name: </b>{{ user.first_name }}</li>
+                                {% endif %}
+                                {% if user.last_name %}
+                                    <li class="fg-dark"><b>Last name: </b>{{ user.last_name }}</li>
+                                {% endif %}
+                                <li class="fg-dark"><b>Role: </b>{{ user.type }}</li>
+                            </ul>
+                            <a href="{% url 'users:add_address' %}">
+                                <button class="btn btn-theme btn-rounded">اضافه کردن آدرس</button>
+                            </a>
+                            <a href="{% url 'user_orders' %}">
+                                <button class="btn btn-theme btn-rounded">گزارش سفارشات</button>
+                            </a>
+                            <a href="{% url 'users:update_profile' user.pk %}">
+                                <button class="btn btn-theme btn-rounded">به روز رسانی اطلاعات شخصی</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End profile -->
 
             {#        ------------------------------------------------------------#}
 
@@ -217,28 +228,58 @@
                                 <div class="account-box">
                                     <div class="service-box">
                                         <div class="service-icon">
-                                            <a href="#"> <i class="fa fa-location-arrow"></i> </a>
+                                            <a href="{% url 'users:user_addresses' %}"> <i
+                                                    class="fa fa-location-arrow"></i> </a>
                                         </div>
                                         <div class="service-desc">
-                                            <h4>Your Addresses</h4>
+                                            <h4>آدرس های شما</h4>
                                             <p>Edit addresses for orders and gifts</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-12">
-                                <div class="account-box">
-                                    <div class="service-box">
-                                        <div class="service-icon">
-                                            <a href="#"> <i class="fa fa-credit-card"></i> </a>
-                                        </div>
-                                        <div class="service-desc">
-                                            <h4>Payment options</h4>
-                                            <p>Edit or add payment methods</p>
+                            {% if user.is_superuser %}
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="account-box">
+                                        <div class="service-box">
+                                            <div class="service-icon">
+                                                <a href="{% url 'book_create' %}"> <i class="fa fa-credit-card"></i>
+                                                </a>
+                                            </div>
+                                            <div class="service-desc">
+                                                <h4>افزودن کتاب</h4>
+                                                <p>Edit or add payment methods</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="account-box">
+                                        <div class="service-box">
+                                            <div class="service-icon">
+                                                <a href="{% url 'author_create' %}"> <i class="fab fa-paypal"></i> </a>
+                                            </div>
+                                            <div class="service-desc">
+                                                <h4>ایجاد نویسنده</h4>
+                                                <p>View benefits and payment settings</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="account-box">
+                                        <div class="service-box">
+                                            <div class="service-icon">
+                                                <a href="{% url 'author_create' %}"> <i class="fab fa-amazon"></i> </a>
+                                            </div>
+                                            <div class="service-desc">
+                                                <h4>ایجاد دسته بندی</h4>
+                                                <p>View benefits and payment settings</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
                             <div class="col-lg-4 col-md-12">
                                 <div class="account-box">
                                     <div class="service-box">

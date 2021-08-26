@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django.contrib.humanize',  # for money
     'crispy_forms',
+    'smart_selects',  # for choicefield in Address
 
     # apps
     'users',
@@ -156,7 +157,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
@@ -165,9 +165,23 @@ PHONENUMBER_DEFAULT_REGION = "IR"
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
+# for crispy forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
     messages.INFO: 'alert-info',
 }
+
+# Email Settings #
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'koossaar.k@gmail.com'
+EMAIL_HOST_PASSWORD = 'qsazuzidiwjhivxt'
+
+# JQUERY_URL = True  # for Chained ManyToMany Selects
+USE_DJANGO_JQUERY = True

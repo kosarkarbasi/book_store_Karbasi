@@ -11,7 +11,7 @@
                         </div>
                         <p class="text-right">{{ address }}</p>
                         <hr class="mb-4">
-                        <div class="col-12 d-flex shopping-box"><a href="checkout.html" class="ml-auto btn hvr-hover">اضافه
+                        <div class="col-12 d-flex shopping-box"><a href="{% url 'users:user_addresses' %}" class="ml-auto btn hvr-hover">اضافه
                             کردن آدرس جدید</a></div>
                         <hr class="mb-4">
                         <div class="title text-right"><span>روش پرداخت</span></div>
@@ -73,7 +73,7 @@
                                 <hr class="my-1">
                                 <div class="d-flex">
                                     <h4>جمع کل</h4>
-                                    <div class="ml-auto font-weight-bold">{{ order.total_price_wihout_discount|intcomma }}</div>
+                                    <div class="ml-auto font-weight-bold">{{ order.total_price_without_discount|intcomma }}</div>
                                 </div>
                                 <div class="d-flex">
                                     <h4>قیمت با تخفیف</h4>
@@ -102,7 +102,8 @@
                                 <hr>
                             </div>
                         </div>
-                        <div class="col-12 d-flex shopping-box"><a href="{% url 'submit_order' %}" class="ml-auto btn hvr-hover">ثبت سفارش</a></div>
+                        <div class="col-12 d-flex shopping-box"><a href="{% url 'submit_order' %}"
+                                                                   class="ml-auto btn hvr-hover">ثبت سفارش</a></div>
                     </div>
                 </div>
             </div>

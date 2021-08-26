@@ -9,5 +9,5 @@ def cart(request):
     else:
         customer = request.user
 
-    cart_items = ShoppingCart.objects.filter(order__customer=customer)
+    cart_items = ShoppingCart.objects.filter(order__customer=customer, order__status='ordering')
     return {'cart_items': cart_items}

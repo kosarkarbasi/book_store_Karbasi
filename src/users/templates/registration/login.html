@@ -19,27 +19,27 @@
                 <div class="signin-image">
                     <figure><img src="{% static 'users/registration/images/signin-image.jpg' %}" alt="sing up image">
                     </figure>
-                    <a href="{% url 'users:register' %}" class="signup-image-link">Create an account</a>
+                    <a href="{% url 'users:register' %}" class="signup-image-link">اکانت ندارید؟</a>
+                    <a href="{% url 'users:password_reset' %}" class="signup-image-link">رمز عبور خود را فراموش کرده اید؟</a>
                 </div>
                 <div class="signin-form">
-                    <h2 class="form-title">Log in</h2>
+                    <h2 class="form-title">ورود</h2>
                     <form method="POST" class="register-form" id="login-form">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="email"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                            <input type="text" name="email" id="email" placeholder="Your Email"/>
+                            <label for="email" dir="rtl"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            <input type="text" name="email" id="email" placeholder="ایمیل"/>
                         </div>
                         <div class="form-group">
                             <label for="pass"><i class="zmdi zmdi-lock"></i></label>
-                            <input type="password" name="password" id="pass" placeholder="Password"/>
+                            <input type="password" name="password" id="pass" placeholder="رمز"/>
                         </div>
                         <div class="form-group">
                             <input type="checkbox" name="remember-me" id="remember-me" class="agree-term"/>
-                            <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember
-                                me</label>
+                            <label for="remember-me" class="label-agree-term"><span><span></span></span> مرا به خاطر بسپار</label>
                         </div>
                         <div class="form-group form-button">
-                            <input type="submit" id="submit_btn" class="form-submit" value="Log in"/>
+                            <input type="submit" id="submit_btn" class="form-submit" value="ورود به کتابان"/>
                         </div>
                     </form>
                     <div class="social-login">

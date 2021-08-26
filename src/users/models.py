@@ -1,11 +1,14 @@
 from django.core.mail import send_mail
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, AbstractUser
+from django.urls import reverse
 
 from .managers import UserManager
 from django.contrib.auth.models import PermissionsMixin
 
 from phonenumber_field.modelfields import PhoneNumberField
+from smart_selects.db_fields import ChainedForeignKey
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -38,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
     device = models.CharField(max_length=200, null=True, blank=True)
+    username = models.CharField(max_length=50, null=True, blank=True)
     first_name = models.CharField('نام', max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -82,6 +86,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def get_absolute_url(self):
+        # return reverse('users:profile', kwargs={'pk': self.pk})
+        return reverse('users:profile')
 
     def __str__(self):
         if self.email:
@@ -130,6 +138,7 @@ class Customer(User):
 
 
 class Personnel(User):
+    # is_staff = models.BooleanField(default=True)
     base_type = User.Type.PERSONNEL
     objects = PersonnelManager()
 
@@ -164,6 +173,8 @@ class Admin(User):
             self.type = User.Type.ADMIN
         return super().save(*args, **kwargs)
 
+
+# -------------- Address Models
 
 class Province(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -201,9 +212,16 @@ class Address(models.Model):
     active: اکتیوبودن یا نبودن : True/false
     """
 
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True)
-    postal_code = models.CharField(max_length=10)
+    city = ChainedForeignKey(City,
+                             chained_field="province",
+                             chained_model_field="province",
+                             show_all=False,
+                             auto_choose=True,
+                             sort=True,
+                             on_delete=models.SET_NULL,
+                             null=True)
+    postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
     full_address = models.TextField(max_length=200)
     active = models.BooleanField(default=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

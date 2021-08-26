@@ -6,6 +6,10 @@
     <!-- Start Shop Detail  -->
     <div class="shop-detail-box-main">
         <div class="container">
+            <div class="text-right">
+                {% include 'message.html' %}
+                <br>
+            </div>
             <div class="row">
                 <div class="col-xl-5 col-lg-5 col-md-6">
                     <div id="carousel-example-1" class="single-product-slider carousel slide" data-ride="carousel">
@@ -38,6 +42,12 @@
                         {% endif %}
                         <p class="available-stock"><span> موجودی {{ book.inventory }} عدد</span>
                         <p>
+                        <h4>دسته بندی:</h4>
+                        <p class="available-stock"
+                        {% for category in book.category.all %}
+                            <span>{{ category }}</span>
+                        {% endfor %}
+                        <p>
                         <h4>معرفی کتاب</h4>
                         {#                        <p class="text-justify">{{ book.description|truncatewords:15 }}</p>#}
                         {% if book.description|wordcount > 56 %}
@@ -57,56 +67,74 @@
                         {% for auther in book.author.all %}
                             <p>{{ auther }}</p>
                         {% endfor %}
-                        <ul>
-                            <li>
-                                <div class="form-group size-st">
-                                    <label class="size-label">امتیاز</label>
-                                    <select id="basic" class="selectpicker show-tick form-control">
-                                        <option value="0">امتیاز دهید</option>
-                                        <option value="1">"★☆☆☆☆"</option>
-                                        <option value="2">"★★☆☆☆"</option>
-                                        <option value="3">"★★★☆☆"</option>
-                                        <option value="4">"★★★★☆"</option>
-                                        <option value="5">"★★★★★"</option>
-                                    </select>
+                        <div class="form-group size-st p-2">
+                            {% if book.score %}
+                                <h4 class="size-label">امتیاز</h4>
+                                {% if book.score == 1 %}
+                                    <h2>★☆☆☆☆</h2>
+                                {% elif book.score == 2 %}
+                                    <h2>★★☆☆☆</h2>
+                                {% elif book.score == 3 %}
+                                    <h2>★★★☆☆</h2>
+                                {% elif book.score == 4 %}
+                                    <h2>★★★★☆</h2>
+                                {% elif book.score == 5 %}
+                                    <h2>★★★★★</h2>
+                                {% endif %}
+                                {#                                    <select id="basic" class="selectpicker show-tick form-control">#}
+                                {#                                        <option value="0">امتیاز دهید</option>#}
+                                {#                                        <option value="1">"★☆☆☆☆"</option>#}
+                                {#                                        <option value="2">"★★☆☆☆"</option>#}
+                                {#                                        <option value="3">"★★★☆☆"</option>#}
+                                {#                                        <option value="4">"★★★★☆"</option>#}
+                                {#                                        <option value="5">"★★★★★"</option>#}
+                                {#                                    </select>#}
                                 </div>
-                            </li>
-                            <li>
-
-                            </li>
-                        </ul>
-
-                        <div class="price-box-bar">
-                            <form method="post" action="{% url 'book_detail' book.pk %}">
-                                {% csrf_token %}
-                                <ul>
-                                    <li>
-                                        <div class="form-group quantity-box">
-                                            <label for="quantity" class="control-label">تعداد</label>
-                                            <input id="quantity" name="quantity" class="form-control" value="0" min="0"
-                                                   max="30" type="number">
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div>
-                                            <input type="submit" id="submit_btn" class="btn hvr-hover mt-4"
-                                                   data-fancybox-close=""
-                                                   value="افزودن به سبد خرید">
-                                        </div>
-                                    </li>
-                                    <li>
-                                        {% if inventory_message %}
-                                            <p class="text-danger" id="show_message"></p>
-                                        {% endif %}
-                                    </li>
-                                </ul>
-                            </form>
-                            <div class="cart-and-bay-btn">
-                                <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">بازگشت به
-                                    کتاب ها</a>
+                            {% endif %}
+                        {% ifequal book.inventory 0 %}
+                            <div class="text-danger">
+                                <p class="sale">ناموجود</p>
                             </div>
-                        </div>
-                    </div>
+                        {% else %}
+
+                            <div class="price-box-bar">
+                                <form method="post" action="{% url 'book_detail' book.pk %}">
+                                    {% csrf_token %}
+                                    <ul>
+                                        <li>
+                                            <div class="form-group quantity-box">
+                                                <label for="quantity" class="control-label">تعداد</label>
+                                                <input id="quantity" name="quantity" class="form-control" value="0"
+                                                       min="0"
+                                                       max="30" type="number">
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="cart-and-bay-btn">
+                                                <input type="submit" id="submit_btn"
+                                                       class="btn hvr-hover mt-4 text-light"
+                                                       data-fancybox-close=""
+                                                       value="افزودن به سبد خرید">
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </form>
+                                <div class="cart-and-bay-btn">
+                                    <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">بازگشت
+                                        به
+                                        کتاب ها</a>
+                                    {% if user.is_superuser %}
+                                        <a class="btn btn-info" data-fancybox-close=""
+                                           href="{% url 'book_update' book.pk %}">
+                                            به روز رسانی کتاب</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+
+                            </div>
+
+                            </div>
+                        {% endifequal %}
                 </div>
             </div>
 

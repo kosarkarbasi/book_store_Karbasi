@@ -9,8 +9,8 @@
                 <div class="col-lg-12">
                     <h2>Cart</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active">Cart</li>
+                        <li class="breadcrumb-item"><a href="{% url 'book_list' %}">کتاب ها</a></li>
+                        <li class="breadcrumb-item active">سبد خرید</li>
                     </ul>
                 </div>
             </div>
@@ -23,17 +23,20 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
+                    <div class="text-right">
+                        {% include 'message.html' %}
+                    </div>
                     <div class="table-main table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>Images</th>
-                                <th>Product Name</th>
-                                <th>Price</th>
-                                <th>discount</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Remove</th>
+                                <th>تصویر</th>
+                                <th>نام</th>
+                                <th>قیمت</th>
+                                <th>تخفیف</th>
+                                <th>تعداد</th>
+                                <th>جمع</th>
+                                <th>حذف</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -112,7 +115,7 @@
                               action="{% url 'cart' %}?total=12">
                             <div class="input-group input-group-sm">
                                 {% csrf_token %}
-                                <input class="form-control" placeholder="Enter your coupon code"
+                                <input class="form-control" placeholder="کد تخفیف خود را وارد کنید"
                                        aria-label="Coupon code"
                                        type="text" name="code">
                                 <div class="input-group-append">
@@ -121,12 +124,13 @@
 
                             </div>
                         </form>
-                        <p class="text-danger">{{ code_message }}</p>
+
+                        {#                        <p class="text-danger">{{ code_message }}</p>#}
                     </div>
                 </div>
                 <div class="col-lg-6 col-sm-6">
                     <div class="update-box">
-                        <input value="Update Cart" type="submit">
+                        <a href="{% url 'book_list' %}"><input value="ادامه خرید" type="submit"></a>
                     </div>
                 </div>
             </div>
@@ -134,7 +138,8 @@
                 <div class="col-lg-8 col-sm-12"></div>
                 <div class="col-lg-4 col-sm-12">
                     <div class="order-box">
-                        <h3>Order summary</h3>
+                        <h3 class="text-right">خلاصه سفارش شما</h3>
+                        <hr>
                         <div class="d-flex">
                             <h4>جمع کل</h4>
                             <div class="ml-auto font-weight-bold"
@@ -176,7 +181,7 @@
                     </div>
                 </div>
                 <div class="col-12 d-flex shopping-box"><a href="{% url 'checkout' %}"
-                                                           class="ml-auto btn hvr-hover">Checkout</a></div>
+                                                           class="ml-auto btn hvr-hover">ثبت و پرداخت</a></div>
             </div>
 
         </div>

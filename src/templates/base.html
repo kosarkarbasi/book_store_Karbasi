@@ -131,7 +131,7 @@
 <!-- End Main Top -->
 
 <!-- Start Main Top -->
-<header class="main-header">
+<header class="main-header" dir="rtl">
     <!-- Start Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
         <div class="container">
@@ -141,7 +141,8 @@
                         aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="#"><img src="{% static 'home/images/logo.png' %}" class="logo" alt=""></a>
+                <a class="navbar-brand" href="#"><img src="{% static 'home/images/book_logo.png' %}" class="logo"
+                                                      alt=""></a>
             </div>
             <!-- End Header Navigation -->
 
@@ -155,17 +156,41 @@
                             ها</a>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">خرید</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">حساب کاربری v</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'users:profile' %}">پروفایل</a></li>
+                            <li><a href="{% url 'users:password_change' %}">تعویض پسورد</a></li>
+                            {% if user.is_superuser %}
+                                <li><a href="{% url 'users:admin_dashboard' %}">داشبورد ادمین</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'users:profile' %}">حساب کاربری</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">خرید v</a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'cart' %}">سبد خرید</a></li>
                             <li><a href="{% url 'checkout' %}">نهایی کردن خرید</a></li>
-                            <li><a href="{% url 'profile' %}">حساب کاربری</a></li>
-                            <li><a href="wishlist.html">Wishlist</a></li>
-                            <li><a href="shop-detail.html">Shop Detail</a></li>
+                            <li><a href="{% url 'user_orders' %}">تاریخچه سفارشات</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="service.html">Our Service</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact-us.html">Contact Us</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">دسته بندی ها v</a>
+                        <ul class="dropdown-menu">
+                            {% for category in all_categories %}
+                                <li><a href="{% url 'category' category.id %}">{{ category.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">نویسنده ها v</a>
+                        <ul class="dropdown-menu">
+                            {% for author in all_authors %}
+                                <li><a href="{% url 'author' author.id %}">{{ author.full_name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
