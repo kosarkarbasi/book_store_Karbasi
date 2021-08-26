@@ -5,7 +5,7 @@ from .models import Order, ShoppingCart
 # Register your models here.
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-    list_display = ['item','pk', 'quantity', 'order']
+    list_display = ['item', 'pk', 'quantity', 'order']
 
 
 class CartInline(admin.StackedInline):
@@ -17,3 +17,4 @@ class CartInline(admin.StackedInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['customer', 'status', 'order_date', 'code']
     inlines = [CartInline]
+    list_filter = ['status', ]
