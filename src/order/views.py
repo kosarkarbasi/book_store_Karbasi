@@ -127,7 +127,8 @@ def submit_order(request):
 
 
 def best_seller(request):
-    best_sellers_books = ShoppingCart.objects.select_related('order').filter(order__status='submit').annotate(total=Count('item__id')).order_by('total').values_list('item_id',Count('item_id'))
+    best_sellers_books = ShoppingCart.objects.select_related('order').filter(order__status='submit').values(
+        'item_id').annotate(total=Count('item_id')).order_by('-total').values_list('item_id', 'total','item__title')
     print(best_sellers_books)
     return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
 
