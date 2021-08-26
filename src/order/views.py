@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -127,13 +127,10 @@ def submit_order(request):
 
 
 def best_seller(request):
-    best_sellers_books = Order.objects.filter(status='submit').values_list('shoppingcart__item_id',
-                                                                           'shoppingcart__quantity',
-                                                                           'shoppingcart__item__title', ).annotate(
-        Sum('shoppingcart__quantity'))\
-        # .order_by(Sum(F('-shoppingcart__quantity')))
-    a = Order.objects.select_related( 'shoppingcart')
+    best_sellers_books = ShoppingCart.objects.select_related('order').filter(order__status='submit').annotate(total=Count('item__id')).order_by('total').values_list('item_id',Count('item_id'))
+    print(best_sellers_books)
     return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
+
 # select item_id, count(item_id) from public.order_shoppingcart as cart
 # inner join public.order_order as orders
 # on (cart.order_id=orders.id)
