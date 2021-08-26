@@ -24,14 +24,14 @@ class CityAdmin(admin.ModelAdmin):
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("email", 'device', 'active_address', "type", 'date_joined')
-    fields = ("email", 'phone_number', "avatar", 'device')
+    fields = ("email", 'phone_number', "avatar", 'device', 'type')
     readonly_fields = ('password',)
 
 
 @admin.register(Personnel)
 class PersonnelAdmin(admin.ModelAdmin):
     list_display = ("email", "type", 'date_joined', 'is_staff')
-    fields = ("email", 'phone_number', "avatar", "type", 'device', 'is_staff')
+    fields = ("email", 'phone_number', "avatar", "type", 'device', 'is_staff', 'groups')
     readonly_fields = ['date_joined']
 
     # def get_queryset(self, request):
@@ -54,7 +54,7 @@ class CustomerAdmin(admin.ModelAdmin):
 #     ordering = ('email',)
 
 
-admin.site.register(User, UserAdmin)
+# admin.site.register(User, UserAdmin)
 
 # @admin.register(User)
 # class UserAdmin(admin.ModelAdmin):

@@ -94,7 +94,7 @@ def author(request, pk):
     return render(request, 'book_list.html', {'books': books})
 
 
-class BookCreateView(LoginRequiredMixin,SuccessMessageMixin, CreateView):
+class BookCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Book
     fields = ('title', 'description', 'author', 'category', 'inventory', 'price', 'discount', 'image', 'score')
     template_name = 'management/book_create.html'
@@ -116,11 +116,21 @@ class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     success_message = 'کتاب با موفقیت آپدیت شد'
 
 
-class AuthorCreateView(SuccessMessageMixin,LoginRequiredMixin, CreateView):
+class AuthorCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Author
     fields = ('first_name', 'last_name')
     template_name = 'management/author_create.html'
     success_message = 'نویسنده با موفقیت اضافه شد'
+
+    def get_success_url(self):
+        return reverse('book_list')
+
+
+class CategoryCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    model = Category
+    fields = ('name',)
+    template_name = 'management/category_create.html'
+    success_message = 'دسته بندی با موفقیت ایجاد گردید'
 
     def get_success_url(self):
         return reverse('book_list')

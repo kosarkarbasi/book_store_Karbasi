@@ -144,6 +144,7 @@ class Personnel(User):
 
     class Meta:
         proxy = True
+        # permissions = ('product.add_book',)
         verbose_name = 'کارمند'
         verbose_name_plural = 'کارمندها'
 

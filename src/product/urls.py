@@ -12,4 +12,6 @@ urlpatterns = [
     path('update/book/<int:pk>/', views.BookUpdateView.as_view(), name='book_update'),
 
     path('create/author/', views.AuthorCreateView.as_view(), name='author_create'),
+
+    path('create/category/', views.CategoryCreateView.as_view(), name='category_create'),
 ]

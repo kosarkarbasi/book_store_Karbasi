@@ -238,7 +238,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if user.is_superuser %}
+                            {% if user.is_superuser or user.is_staff %}
                                 <div class="col-lg-4 col-md-12">
                                     <div class="account-box">
                                         <div class="service-box">
@@ -270,7 +270,7 @@
                                     <div class="account-box">
                                         <div class="service-box">
                                             <div class="service-icon">
-                                                <a href="{% url 'author_create' %}"> <i class="fab fa-amazon"></i> </a>
+                                                <a href="{% url 'category_create' %}"> <i class="fab fa-amazon"></i> </a>
                                             </div>
                                             <div class="service-desc">
                                                 <h4>ایجاد دسته بندی</h4>
