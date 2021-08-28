@@ -1,9 +1,7 @@
-from django.contrib.auth.forms import UserCreationForm, ReadOnlyPasswordHashField, AuthenticationForm
-from django.core.validators import MaxValueValidator
-
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import User, Address, City, Customer, Province
 from django import forms
-from django.shortcuts import get_list_or_404, get_object_or_404
 
 
 class SignUpForm(UserCreationForm):
@@ -23,18 +21,29 @@ class LoginForm(AuthenticationForm):
 
 
 class AddressForm(forms.ModelForm):
-    # province = forms.ChoiceField(label='')
-    # city = forms.ChoiceField(label='')
-    # active = forms.BooleanField(widget=forms.BooleanField, label='')
+    active = forms.BooleanField(widget=forms.HiddenInput(), initial=True)
 
     class Meta:
         model = Address
         fields = ['province', 'city', 'postal_code', 'full_address', 'active']
         labels = {
-            'city': '',
-            'province': '',
-            'postal_code': '',
-            'full_address': '',
+            'city': 'شهر',
+            'province': 'استان',
+            'postal_code': 'کد پستی',
+            'full_address': 'آدرس کامل',
             # 'active': 'این آدرس دیفالت باشد؟'
         }
 
+    def __init__(self, *args, **kwargs):
+        """ use init method to access request for using messages """
+        self.request = kwargs.pop('request', None)
+        super(AddressForm, self).__init__(*args, **kwargs)
+
+    def clean_postal_code(self):
+        """ check length of postal code to be 10 digits """
+        super(AddressForm, self).clean()
+        postal_code = self.cleaned_data.get('postal_code')
+        if len(str(postal_code)) != 10:
+            messages.error(request=self.request, message='لطفا کد پستی 10 زقمی خود را وارد کنید')
+            self._errors['postal_code'] = self.error_class(['کد پستی اشتباه است'])
+        return postal_code

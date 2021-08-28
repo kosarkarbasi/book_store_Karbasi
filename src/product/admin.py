@@ -4,9 +4,18 @@ from django.db.models import F
 from .models import Book, Author, Category, Comment
 
 # Register your models here.
-admin.site.register(Author)
-admin.site.register(Comment)
+# admin.site.register(Comment)
 admin.site.register(Category)
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ['first_name', 'last_name', ]
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', ]
 
 
 @admin.register(Book)

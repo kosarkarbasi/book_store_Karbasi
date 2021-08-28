@@ -12,9 +12,7 @@ from .views import (registration_view,
                     user_addresses,
                     activate_address,
                     ProfileUpdateView,
-                    AddressDeleteView,
                     delete_address,
-                    admin_dashboard,
                     create_personnel)
 
 app_name = 'users'
@@ -28,7 +26,7 @@ urlpatterns = [
     path('<int:pk>/delete/', delete_address, name='delete_address'),
     path('profile/update/<int:pk>', ProfileUpdateView.as_view(), name='update_profile'),
 
-    path('admin/panel/', admin_dashboard, name='admin_dashboard'),
+    # path('admin/panel/', admin_dashboard, name='admin_dashboard'),
 
     path('create/personnel/', create_personnel, name='create_personnel'),
 

@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from users.models import Customer, User, Address
@@ -22,6 +21,7 @@ class Order(models.Model):
     code = models.ForeignKey(CodeDiscount, on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=8)
     order_date = models.DateTimeField(auto_now_add=True)
+    total_price = models.PositiveBigIntegerField(default=0, null=True, blank=True)
 
     # order_date = models.DateTimeField()
 
@@ -107,6 +107,16 @@ class Order(models.Model):
         self.code = code
         self.save()
 
+    def reduce_inventory(self):
+        """
+        update and reduce inventory of order items after submit order
+        :return:
+        """
+        for item in self.shoppingcart_set.all():
+            item.item.inventory -= item.quantity
+            item.item.save()
+
+    @property
     def price_with_code(self):
         """
         calculate the final price with code discount and AmountPercent discount
@@ -115,8 +125,12 @@ class Order(models.Model):
         # self.code = code
         if self.code:
             final_price = self.total_price_with_discount - self.code.calculate_discount(self.total_price_with_discount)
+            self.total_price = final_price
+            self.save()
             return int(final_price)
         else:
+            self.total_price = self.total_price_with_discount
+            self.save()
             return int(self.total_price_with_discount)
 
     def __str__(self):

@@ -99,6 +99,8 @@ class Book(models.Model):
         verbose_name = 'کتاب'
         verbose_name_plural = 'کتاب ها'
 
+        ordering = ('created',)
+
     def __str__(self):
         return self.title
 
@@ -106,13 +108,6 @@ class Book(models.Model):
         # return reverse('book_detail', kwargs={'slug': self.slug})
         return reverse('book_detail', kwargs={'pk': self.pk})
 
-    # def save(self, *args, **kwargs):
-    #     """
-    #     save method for slug
-    #     """
-    #     if not self.slug:
-    #         self.slug = slugify(self.title)
-    #     return super().save(*args, **kwargs)
 
     def update_count(self, quantity):
         """

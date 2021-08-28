@@ -6,14 +6,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, update_session_auth_hash
-from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import CreateView, UpdateView, DeleteView
-
-from order.models import Order
-from product.models import Book
 from .forms import SignUpForm, AddressForm
-from .models import User, Customer, Address
+from .models import User, Customer, Address, Personnel
 from django.contrib.auth.models import Group
 
 
@@ -70,7 +65,7 @@ def login_view(request):
                 return render(request, 'registration/login.html', {})
         else:
             # the login is a  GET request, so just show the user the login form.
-            return render(request, 'registration/login.html', {})
+            return render(request, 'registration/login.html')
     return redirect('users:profile')
 
 
@@ -102,18 +97,18 @@ def add_address(request):
     :return: add_address.html
     """
     if request.method == 'POST':
-        form = AddressForm(request.POST)
+        form = AddressForm(request.POST, request=request)
         if form.is_valid():
             province = form.cleaned_data.get('province')
             city = form.cleaned_data.get('city')
             postal_code = form.cleaned_data.get('postal_code')
             full_address = form.cleaned_data.get('full_address')
-            active = form.cleaned_data.get('active')
+            # active = form.cleaned_data.get('active')
             address = Address(province=province, city=city, postal_code=postal_code, full_address=full_address,
-                              active=active)
+                              active=True)
             address.user = request.user
             address.save()
-            previous_addresses = Address.objects.exclude(postal_code=postal_code)
+            previous_addresses = Address.objects.exclude(postal_code=postal_code, user=request.user)
             for addresses in previous_addresses.all():
                 addresses.active = False
                 addresses.save()
@@ -181,15 +176,6 @@ class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     fields = ('email', 'first_name', 'last_name', 'phone_number', 'avatar')
     template_name = 'update_profile.html'
     success_message = 'اطلاعات شما با موفقیت آپدیت شد'
-
-
-# -------------------------------------------------------------------
-def admin_dashboard(request):
-    this_month = timezone.now().today().month
-    month_orders = Order.objects.filter(order_date__month=this_month).count()
-    return render(request, 'panels/admin_dashboard.html', {
-        'month_orders': month_orders,
-    })
 
 
 # -------------------------------------------------------------------

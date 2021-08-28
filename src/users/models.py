@@ -41,7 +41,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
     device = models.CharField(max_length=200, null=True, blank=True)
-    username = models.CharField(max_length=50, null=True, blank=True)
     first_name = models.CharField('نام', max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -222,7 +221,8 @@ class Address(models.Model):
                              sort=True,
                              on_delete=models.SET_NULL,
                              null=True)
-    postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
+    # postal_code = models.IntegerField(validators=[MaxValueValidator(9999999999)])
+    postal_code = models.DecimalField(max_digits=78, decimal_places=0)
     full_address = models.TextField(max_length=200)
     active = models.BooleanField(default=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

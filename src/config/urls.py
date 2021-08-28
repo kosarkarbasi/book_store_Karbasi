@@ -27,7 +27,8 @@ urlpatterns = [
     path('', include('product.urls')),
     path('', include('order.urls')),
     path('', include('discount.urls')),
-    path('chaining/', include('smart_selects.urls')), # for Chained ManyToMany Selects
+    path('chaining/', include('smart_selects.urls')),  # for Chained ManyToMany Selects
+    path('', include('dashboard.urls'))
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()

@@ -1,10 +1,13 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.generic import CreateView, UpdateView
 
@@ -105,8 +108,14 @@ class BookCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         form.save()
         return super(BookCreateView, self).form_valid(form)
 
-    # def get_success_url(self):
-    #     return reverse('users:profile')
+    @method_decorator(permission_required('product.add_book', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('product.add_book'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد کتاب را ندارید"
+            )
+        return super(BookCreateView, self).dispatch(request, *args, **kwargs)
 
 
 class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -115,6 +124,15 @@ class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     template_name = 'management/book_update.html'
     success_message = 'کتاب با موفقیت آپدیت شد'
 
+    @method_decorator(permission_required('product.change_book', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('product.change_book'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد آپدیت کتاب را ندارید"
+            )
+        return super(BookUpdateView, self).dispatch(request, *args, **kwargs)
+
 
 class AuthorCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Author
@@ -122,15 +140,33 @@ class AuthorCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     template_name = 'management/author_create.html'
     success_message = 'نویسنده با موفقیت اضافه شد'
 
+    @method_decorator(permission_required('product.add_author', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('product.add_author'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد نویسنده را ندارید"
+            )
+        return super(AuthorCreateView, self).dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse('book_list')
 
 
-class CategoryCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Category
     fields = ('name',)
     template_name = 'management/category_create.html'
     success_message = 'دسته بندی با موفقیت ایجاد گردید'
+
+    @method_decorator(permission_required('product.add_category', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('product.add_category'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد دسته بندی را ندارید"
+            )
+        return super(CategoryCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('book_list')

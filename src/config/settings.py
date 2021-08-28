@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',  # for money
     'crispy_forms',
     'smart_selects',  # for choicefield in Address
+    'coverage',  # for test
+    'import_export',  # for export data as excel
 
     # apps
     'users',
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'order',
     'product',
     'pages',
+    'dashboard'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -72,7 +75,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'pages/templates', BASE_DIR / 'users/templates',
-                 BASE_DIR / 'product/templates', BASE_DIR / 'order/templates']
+                 BASE_DIR / 'product/templates', BASE_DIR / 'order/templates', BASE_DIR / 'dashboard/templates']
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -142,7 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'statics']
+STATICFILES_DIRS = [BASE_DIR / 'statics', BASE_DIR / 'dashboard']
 STATIC_ROOT = BASE_DIR / 'assets'
 
 MEDIA_URL = '/media/'
@@ -185,3 +188,6 @@ EMAIL_HOST_PASSWORD = 'qsazuzidiwjhivxt'
 
 # JQUERY_URL = True  # for Chained ManyToMany Selects
 USE_DJANGO_JQUERY = True
+
+# for import and export data
+IMPORT_EXPORT_USE_TRANSACTIONS = True

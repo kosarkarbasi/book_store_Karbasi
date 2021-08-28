@@ -10,6 +10,7 @@ from users.models import Customer
 from .models import ShoppingCart, Order
 
 
+@login_required(login_url='users:login')
 def cart(request):
     """
     this method create an object from customer's order with 'ordering' status
@@ -50,12 +51,16 @@ def cart(request):
         except ObjectDoesNotExist:
             messages.error(request, 'کد اشتباه است')
             price_with_code = order.total_price_with_discount
+    if order.shoppingcart_set.all().count() == 0:
+        messages.error(request, 'سبد خرید شما خالی است')
+        return render(request, 'cart.html')
 
     context = {'order': order, 'price_with_code': price_with_code}
 
     return render(request, 'cart.html', context)
 
 
+# ------------------------------------------------------------------------
 def delete_product(request, pk):
     """
     this method calls when customer wants to delete cart items in cart
@@ -69,6 +74,7 @@ def delete_product(request, pk):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+# ------------------------------------------------------------------------
 @login_required(login_url='users:login')
 def checkout(request):
     """
@@ -79,6 +85,9 @@ def checkout(request):
 
     # check item inventory with item quantity in cart
     shopping_cart = order.shoppingcart_set.all()
+    if shopping_cart.count() == 0:
+        messages.error(request, 'سبد خرید شما خالی است')
+        return render(request, 'cart.html')
     for cart_item in shopping_cart:
         if 0 < cart_item.item.inventory < cart_item.quantity:
             messages.error(request, f'موجودی {cart_item.item.title}، {cart_item.item.inventory} عدد است')
@@ -90,7 +99,7 @@ def checkout(request):
     # end check
 
     code = order.code
-    price_with_code = order.price_with_code()
+    price_with_code = order.price_with_code
     discount = order.code_value(code)
     address = order.address
     if address is None:
@@ -104,6 +113,7 @@ def checkout(request):
     })
 
 
+# ------------------------------------------------------------------------
 @login_required(login_url='users:login')
 def user_orders(request):
     """
@@ -114,6 +124,7 @@ def user_orders(request):
     return render(request, 'user_orders.html', {'order': order})
 
 
+# ------------------------------------------------------------------------
 @login_required()
 def submit_order(request):
     """
@@ -123,14 +134,18 @@ def submit_order(request):
     """
     order = Order.objects.get(customer=request.user, status='ordering')
     order.change_status()
+    order.reduce_inventory()
     return render(request, 'end_order.html')
 
 
+# ------------------------------------------------------------------------
 def best_seller(request):
     best_sellers_books = ShoppingCart.objects.select_related('order').filter(order__status='submit').values(
         'item_id').annotate(total=Count('item_id')).order_by('-total').values_list('item_id', 'total', 'item__title',
                                                                                    'item__image')
     print(best_sellers_books)
+    for book in best_sellers_books:
+        print(book[1])
     return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
 
 # select item_id, count(item_id) from public.order_shoppingcart as cart

@@ -7,6 +7,7 @@ from django.views.generic import ListView
 from product.models import Book
 
 
+# --------------------------------------------------------------------
 class SearchResultsView(ListView):
     model = Book
     template_name = 'search_results.html'
@@ -19,6 +20,7 @@ class SearchResultsView(ListView):
         return search_result
 
 
+# --------------------------------------------------------------------
 def search_view(request):
     if request.is_ajax():
         query = request.GET.get('term')
@@ -39,8 +41,8 @@ def search_view(request):
     return HttpResponse(dump, mimetype)
 
 
+# --------------------------------------------------------------------
 def search_result(request):
     search_term = request.GET.get('search')
     book = Book.objects.get(title__exact=search_term)
     return render(request, 'search_results.html', {'book': book})
-
