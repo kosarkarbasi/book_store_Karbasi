@@ -1,8 +1,15 @@
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
+from django.views.generic import CreateView
+
 from discount.forms import CodeDiscountForm
-from .models import CodeDiscount
+from .models import CodeDiscount, AmountPercentDiscount
 
 
 @require_POST
@@ -18,3 +25,23 @@ def code_apply(request):
             request.session['code'] = None
 
     return redirect('cart')
+
+
+class AmountPercentDiscountCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = AmountPercentDiscount
+    fields = ('type', 'percent', 'amount', 'max_discount', 'active', 'price',)
+    template_name = 'discount_create.html'
+    success_message = 'تخفیف با موفقیت اضافه شد'
+
+    # def form_valid(self, form):
+    #     form.instance.created = timezone.now()
+    #     form.save()
+    #     return super(BookCreateView, self).form_valid(form)
+
+    @method_decorator(permission_required('discount.add_amountpercentdiscount', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('discount.add_amountpercentdiscount'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد تخفیف را ندارید"
+            )

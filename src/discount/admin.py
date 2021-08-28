@@ -2,12 +2,7 @@ from django.contrib import admin, messages
 
 from .models import CodeDiscount, AmountPercentDiscount
 
-
-@admin.site.register(AmountPercentDiscount)
-class AmountPercentDiscountAdmin(admin.ModelAdmin):
-    list_display = ['type', 'active']
-    search_fields = ['type']
-    list_editable = ['active', ]
+admin.site.register(AmountPercentDiscount)
 
 
 @admin.register(CodeDiscount)

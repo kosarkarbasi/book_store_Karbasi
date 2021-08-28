@@ -5,7 +5,7 @@ from .models import Book, Author, Category, Comment
 
 # Register your models here.
 # admin.site.register(Comment)
-admin.site.register(Category)
+# admin.site.register(Category)
 
 
 @admin.register(Author)

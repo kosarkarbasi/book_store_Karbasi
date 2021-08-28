@@ -162,6 +162,7 @@
                             <li><a href="{% url 'users:password_change' %}">تعویض پسورد</a></li>
                             {% if user.is_superuser %}
                                 <li><a href="{% url 'admin_dashboard' %}">داشبورد ادمین</a></li>
+                                <li><a href="{% url 'create_code' %}">افزودن تخفیف</a></li>
                             {% endif %}
                             <li><a href="{% url 'users:profile' %}">حساب کاربری</a></li>
                             <li><a href="{% url 'users:user_addresses' %}">مدیریت آدرس ها</a></li>
