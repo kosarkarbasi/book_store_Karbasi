@@ -63,7 +63,10 @@ def home(request):
         book = Book.objects.get(pk=best_id[0])
         best_sellers_books.append(book)
 
-    return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
+    now = timezone.now().today()
+    after_one_week = now + timedelta(days=-7)
+    newest_books = Book.objects.filter(created__lte=now, created__gte=after_one_week)
+    return render(request, 'home.html', {'best_sellers_books': best_sellers_books, 'newest_books': newest_books})
 
 # --- SQL query
 # select item_id, count(item_id) from public.order_shoppingcart as cart
