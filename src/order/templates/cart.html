@@ -67,19 +67,23 @@
                                         {% endif %}
 
                                     </td>
-                                    {#<td class="quantity-box"><input type="number" name="override_quantity" size="4" value="{{ item.quantity }}"#}
-                                    {#min="0" step="1" class="c-input-text qty text"></td>#}
                                     <td>
                                         <table>
                                             <tr>
                                                 <td>
-                                                    {{ item.quantity }}
-                                                </td>
-                                                <td>
-                                                    <form method='get'
-                                                          action='{% url 'cart' %}'>
-                                                        <input type="submit" value="+" name="add"/>
-                                                        <input type="submit" value="_" name="remove"/>
+                                                    <form method="POST" class="form_quantity" id="{{ item.id }}">
+                                                        {% csrf_token %}
+                                                        <input id="{{ item.id }}" type="submit" value="+"
+                                                               quantity="{{ item.quantity }}"
+                                                               pk="{{ item.id }}"
+                                                               class="quantity{{ item.id }} btn-quantity"
+                                                               name="+"/>
+                                                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                                                        <span id="quantity_count"
+                                                              class="quantity_count{{ item.id }}">{{ item.quantity }}</span>
+                                                        <input id="{{ item.id }}" type="submit" value="-"
+                                                               class="quantity{{ item.id }} btn-quantity"
+                                                               name="-"/>
                                                     </form>
                                                 </td>
                                             </tr>
@@ -87,8 +91,7 @@
 
                                     </td>
                                     <td class="total-pr">
-                                        {#                                        <p>{{ item.quantity }}</p>#}
-                                        <p>{{ item.quantity_price|intcomma }}</p>
+                                        <p id="quantity_price{{ item.id }}">{{ item.quantity_price|intcomma }}</p>
                                     </td>
                                     <td class="remove-pr">
                                         <form method="post">
@@ -111,21 +114,18 @@
                 <div class="col-lg-6 col-sm-6">
                     <div class="coupon-box">
 
-                        <form method="get"
-                              action="{% url 'cart' %}?total=12">
+                        <form method="post" action="{% url 'cart' %}" id="code_form">
                             <div class="input-group input-group-sm">
                                 {% csrf_token %}
                                 <input class="form-control" placeholder="کد تخفیف خود را وارد کنید"
                                        aria-label="Coupon code"
-                                       type="text" name="code">
+                                       type="text" name="code" id="code">
                                 <div class="input-group-append">
-                                    <button class="btn btn-theme" type="submit">کد تخفیف</button>
+                                    <button class="btn btn-theme code_submit" type="submit">کد تخفیف</button>
                                 </div>
 
                             </div>
                         </form>
-
-                        {#                        <p class="text-danger">{{ code_message }}</p>#}
                     </div>
                 </div>
                 <div class="col-lg-6 col-sm-6">
@@ -143,12 +143,15 @@
                         <div class="d-flex">
                             <h4>جمع کل</h4>
                             <div class="ml-auto font-weight-bold"
-                                 dir="rtl">{{ order.total_price_with_discount|intcomma }} ریال
+                                 id="order_price_with_discount"
+                                 dir="rtl">
+                                {{ order.total_price_with_discount|intcomma }} ریال
+
                             </div>
                         </div>
                         <div class="d-flex">
                             <h4>تخفیف</h4>
-                            <div class="ml-auto font-weight-bold" dir="rtl">
+                            <div class="ml-auto font-weight-bold" dir="rtl" id="total_discount">
                                 {{ order.total_discount|intcomma }} ریال
                             </div>
                         </div>
@@ -157,10 +160,6 @@
                             <h4>کد تخفیف</h4>
                             <div class="ml-auto font-weight-bold">{{ order.code.discount_value }}%</div>
                         </div>
-                        {#                        <div class="d-flex">#}
-                        {#                            <h4>Tax</h4>#}
-                        {#                            <div class="ml-auto font-weight-bold"> $ 2</div>#}
-                        {#                        </div>#}
                         <div class="d-flex">
                             <h4>هزینه ارسال</h4>
                             {% if order.total_price_with_discount > 1000000 %}
@@ -172,8 +171,7 @@
                         <hr>
                         <div class="d-flex gr-total">
                             <h5>جمع کل</h5>
-                            <div class="ml-auto h5" dir="rtl">{{ price_with_code|intcomma }}
-                                {#                            <div class="ml-auto h5" dir="rtl">{{ code_total }}#}
+                            <div class="ml-auto h5" dir="rtl" id="price_with_code">{{ price_with_code|intcomma }}
                                 ریال
                             </div>
                         </div>
@@ -188,3 +186,105 @@
     </div>
     <!-- End Cart -->
 {% endblock content %}
+
+{% block script %}
+
+    <script>
+        $(document).ready(function () {
+            var buttonText;
+            {#$(".form_quantity").click(function (e) {#}
+            $(".btn-quantity").click(function (e) {
+                e.preventDefault()
+                const item_id = $(this).attr('id')
+                buttonText = $(this).attr('name')
+
+                let count = $(`.quantity_count${item_id}`).text()
+                let quantityPrice = $(`#quantity_price${item_id}`).text();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'cart' %}",
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'item_id': item_id,
+                        'buttonText': buttonText,
+                    },
+                    success: function (response) {
+                        if (response.error_message == null) {
+                            $(`.quantity_count${item_id}`).text(response.new_quantity);
+                            $(`#quantity_price${item_id}`).text(response.new_quantity_price);
+                            $(`#order_price_with_discount`).text(
+                                response.order_price_with_discount.toLocaleString() + " ریال"
+                            );
+                            $(`#total_discount`).text(response.total_discount.toLocaleString() + " ریال")
+                            $(`#price_with_code`).text(response.price_with_code.toLocaleString() + " ریال")
+                            iziToast.success({
+                                title: ':)',
+                                message: 'مقادیر با موفیت به روز شدند'
+                            });
+                        } else {
+                            iziToast.error({
+                                title: ':(',
+                                message: response.error_message
+                            });
+                        }
+                    },
+                    error: function (response) {
+                        console.log('error', response);
+                    }
+                })
+
+            })
+
+
+            {#insert code#}
+
+            $("#code_form").submit(function (e) {
+
+                e.preventDefault(); // avoid to execute the actual submit of the form.
+
+                var form = $(this);
+                console.log(form)
+                var inputCode = $("#code").val();
+                console.log(inputCode)
+                var url = form.attr('action');
+                console.log(url)
+
+                $.ajax({
+                    type: "POST",
+                    url: '{% url 'cart' %}',
+                    {#data: form.serialize(), // serializes the form's elements.#}
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        code: inputCode
+                    },
+                    success: function (response) {
+                        if (typeof response.error_code === 'undefined' && typeof response.warning_code === 'undefined') {
+                            $(`#price_with_code`).text(response.price_with_code.toLocaleString() + " ریال")
+
+                            iziToast.success({
+                                title: ':)',
+                                message: response.code_message
+                            });
+                        } else if (typeof response.error_code !== 'undefined') {
+                            iziToast.error({
+                                title: ':(',
+                                message: response.error_code
+                            });
+                        } else {
+                            iziToast.warning({
+                                title: '!',
+                                message: response.warning_code
+                            });
+                        }
+                    }
+                });
+
+
+            });
+        });
+
+    </script>
+
+
+{% endblock script %}

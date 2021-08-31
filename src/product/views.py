@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.generic import CreateView, UpdateView
-
 from order.models import Order, ShoppingCart
 from users.models import Customer, User
 from .models import Book, Category, Author

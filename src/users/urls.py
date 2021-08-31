@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -13,7 +14,8 @@ from .views import (registration_view,
                     activate_address,
                     ProfileUpdateView,
                     delete_address,
-                    create_personnel)
+                    create_personnel,
+                    validate_email)
 
 app_name = 'users'
 
@@ -26,14 +28,16 @@ urlpatterns = [
     path('<int:pk>/delete/', delete_address, name='delete_address'),
     path('profile/update/<int:pk>', ProfileUpdateView.as_view(), name='update_profile'),
 
-    # path('admin/panel/', admin_dashboard, name='admin_dashboard'),
-
     path('create/personnel/', create_personnel, name='create_personnel'),
 
     path('login/', login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/accounts/login'), name='logout'),
+
     path('register/', registration_view, name='register'),
+    path('ajax/validate_email/', validate_email, name='validate_email'),
+
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+
     path('password_change/', change_password, name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
     path('password_reset/', auth_views.PasswordResetView.as_view(success_url=reverse_lazy('users:password_reset_done')),

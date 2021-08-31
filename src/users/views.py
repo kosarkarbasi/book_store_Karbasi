@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -40,6 +40,14 @@ def registration_view(request):
         form = SignUpForm()
         context['registration_form'] = form
     return render(request, 'registration/register.html', context)
+
+
+def validate_email(request):
+    email = request.GET.get('email')
+    data = {
+        'is_taken': User.objects.filter(email__iexact=email).exists()
+    }
+    return JsonResponse(data)
 
 
 # -------------------------------------------------------------------

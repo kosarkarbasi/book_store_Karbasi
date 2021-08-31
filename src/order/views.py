@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, F, Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from discount.models import CodeDiscount
@@ -17,44 +17,81 @@ def cart(request):
     then check the validation of code that user interred and if the code valid, save it to order's code
     then if everything is ok, pass order and final price with code to cart.html
     """
-    # print('book_id', book_id)
     if request.user.is_anonymous:
         device = request.COOKIES['device']
         customer, created = Customer.objects.get_or_create(device=device)
     else:
         customer = request.user
-
     order, created = Order.objects.get_or_create(customer=customer, status='ordering')
-    add = request.GET.get('add')
-    remove = request.GET.get('remove')
-    # print('book_id', book_id)
-    # book = Book.objects.get(id=book_id)
-    # print('book', book)
-    # shopping_cart_item = ShoppingCart.objects.get(order=order, item=book)
-    # print('shopping_cart_item', shopping_cart_item)
-    # if add == '+':
-    #     shopping_cart_item.quantity += 1
-    # elif remove == '_':
-    #     shopping_cart_item.quantity -= 1
-    #     if shopping_cart_item.quantity == 0:
-    #         shopping_cart_item.remove_from_cart()
-    input_code = request.GET.get('code')
-    price_with_code = order.total_price_with_discount
     now = timezone.now()
-    if input_code:
-        try:
-            code_discount = CodeDiscount.objects.get(code__exact=input_code, start_date__lte=now, end_date__gte=now,
-                                                     active=True)
-            order.save_code(code_discount)
-            messages.success(request, 'کد اعمال شد')
-            price_with_code = order.price_with_code(code_discount)
-        except ObjectDoesNotExist:
-            messages.error(request, 'کد اشتباه است')
-            price_with_code = order.total_price_with_discount
+
+    if request.method == "POST":
+        data = {}
+
+        item_id = request.POST.get('item_id')
+        operation = request.POST.get('buttonText')
+        code = request.POST.get('code')
+
+        # check inventory
+        if item_id and operation:
+            cart = ShoppingCart.objects.get(id=int(item_id))
+            if operation == '+' and cart.quantity < cart.item.inventory:
+                cart.quantity += 1
+                new_quantity_price = cart.quantity_price
+                cart.save()
+                data['new_quantity_price'] = new_quantity_price
+            elif operation == '-' and 1 < cart.quantity <= cart.item.inventory:
+                cart.quantity -= 1
+                new_quantity_price = cart.quantity_price
+                cart.save()
+                data['new_quantity_price'] = new_quantity_price
+            elif operation == '-' and cart.quantity == 1:
+                # cart.delete()
+                data['error_message'] = 'میخواهید از کارت خود حذف کنید؟'
+            elif operation == '+' and cart.quantity == cart.item.inventory:
+                data['error_message'] = 'موجودی کافی نیست'
+            cart.save()
+            data['new_quantity'] = str(cart.quantity)
+            data['order_price_with_discount'] = order.total_price_with_discount
+            data['total_discount'] = order.total_discount
+            data['price_with_code'] = order.price_with_code
+
+        # check code
+        if code:
+            try:
+                code_discount = CodeDiscount.objects.get(code__exact=code, start_date__lte=now, end_date__gte=now,
+                                                         active=True)
+                user_orders = Order.objects.filter(customer=request.user)
+                print(user_orders)
+                for user_order in user_orders:
+                    if user_order.code == code_discount and user_order.status == 'ordering':
+                        data['warning_code'] = "این کد قبلا اعمال شده است"
+                    elif user_order.code == code_discount and user_order.status == 'submit':
+                        data['error_code'] = "این کد قبلا استفاده شده است"
+                    elif user_order.status == 'ordering' and user_order.code is not None:
+                        # order.save_code() # if we want to replace code
+                        data['warning_code'] = "شما مجاز به استفاده از یک کد هستید"
+                else:
+                    order.save_code(code_discount)
+                    messages.success(request, 'کد اعمال شد')
+                    data['code_message'] = "کد اعمال شد"
+                    data['order_price_with_discount'] = order.total_price_with_discount
+                    data['total_discount'] = order.total_discount
+                    data['price_with_code'] = order.price_with_code
+
+            except ObjectDoesNotExist:
+                # print('no')
+                messages.error(request, 'کد اشتباه است')
+                data['error_code'] = "کد اشتباه است"
+                data['price_with_code'] = order.price_with_code
+
+        return JsonResponse(data, safe=False)
+
     if order.shoppingcart_set.all().count() == 0:
         messages.error(request, 'سبد خرید شما خالی است')
         return render(request, 'cart.html')
 
+    price_with_code = order.price_with_code
     context = {'order': order, 'price_with_code': price_with_code}
 
     return render(request, 'cart.html', context)
@@ -139,18 +176,6 @@ def submit_order(request):
 
 
 # ------------------------------------------------------------------------
-def best_seller(request):
-    best_sellers_books = ShoppingCart.objects.select_related('order').filter(order__status='submit').values(
-        'item_id').annotate(total=Count('item_id')).order_by('-total').values_list('item_id', 'total', 'item__title',
-                                                                                   'item__image')
-    print(best_sellers_books)
-    for book in best_sellers_books:
-        print(book[1])
-    return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
 
-# select item_id, count(item_id) from public.order_shoppingcart as cart
-# inner join public.order_order as orders
-# on (cart.order_id=orders.id)
-# where orders.status = 'submit'
-# group by item_id
-# order by count(item_id)
+
+

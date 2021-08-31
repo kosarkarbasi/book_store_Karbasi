@@ -16,14 +16,11 @@ class Order(models.Model):
     order_date: datetime for creation of order
     """
     STATUS_CHOICES = [('ordering', 'سفارش'), ('submit', 'ثبت')]
-    # items = models.ManyToManyField(ShoppingCart)
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     code = models.ForeignKey(CodeDiscount, on_delete=models.CASCADE, blank=True, null=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=8)
     order_date = models.DateTimeField(auto_now_add=True)
     total_price = models.PositiveBigIntegerField(default=0, null=True, blank=True)
-
-    # order_date = models.DateTimeField()
 
     @property
     def address(self):
@@ -122,7 +119,6 @@ class Order(models.Model):
         calculate the final price with code discount and AmountPercent discount
         :return: final price of order
         """
-        # self.code = code
         if self.code:
             final_price = self.total_price_with_discount - self.code.calculate_discount(self.total_price_with_discount)
             self.total_price = final_price

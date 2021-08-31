@@ -1,9 +1,15 @@
 import json
-from django.db.models import Q
+from datetime import timedelta
+
+from django.db.models import Q, Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.views.generic import ListView
+
+from config import settings
+from order.models import ShoppingCart
 from product.models import Book
 
 
@@ -46,3 +52,23 @@ def search_result(request):
     search_term = request.GET.get('search')
     book = Book.objects.get(title__exact=search_term)
     return render(request, 'search_results.html', {'book': book})
+
+
+# --------------------------------------------------------------------
+def home(request):
+    best_sellers_ids = ShoppingCart.objects.select_related('order').filter(order__status='submit').values(
+        'item_id').annotate(total=Count('item_id')).order_by('-total').values_list('item_id')
+    best_sellers_books = []
+    for best_id in best_sellers_ids:
+        book = Book.objects.get(pk=best_id[0])
+        best_sellers_books.append(book)
+
+    return render(request, 'home.html', {'best_sellers_books': best_sellers_books})
+
+# --- SQL query
+# select item_id, count(item_id) from public.order_shoppingcart as cart
+# inner join public.order_order as orders
+# on (cart.order_id=orders.id)
+# where orders.status = 'submit'
+# group by item_id
+# order by count(item_id)

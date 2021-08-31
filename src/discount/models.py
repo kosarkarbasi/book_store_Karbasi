@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.urls import reverse
 
 
 class AmountPercentDiscount(models.Model):
@@ -39,6 +40,10 @@ class AmountPercentDiscount(models.Model):
             return f'{self.type} | {self.percent * 100}%'
         elif self.percent is None:
             return f'{self.type} | {self.amount}'
+
+    def get_absolute_url(self):
+        # return reverse('book_detail', kwargs={'slug': self.slug})
+        return reverse('home')
 
     class Meta:
         verbose_name = 'تخفیف مقداری/درصدی'
