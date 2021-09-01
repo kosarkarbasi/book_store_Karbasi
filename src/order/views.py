@@ -1,8 +1,10 @@
+import random
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum, F, Count
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from discount.models import CodeDiscount
@@ -10,7 +12,7 @@ from users.models import Customer
 from .models import ShoppingCart, Order
 
 
-@login_required(login_url='users:login')
+# @login_required(login_url='users:login')
 def cart(request):
     """
     this method create an object from customer's order with 'ordering' status
@@ -18,8 +20,20 @@ def cart(request):
     then if everything is ok, pass order and final price with code to cart.html
     """
     if request.user.is_anonymous:
-        device = request.COOKIES['device']
+        device = request.COOKIES.get('device')
+        # if Customer.objects.filter(device=device).exists():
+        #     print('cart --- new device create')
+        #     new_device = uuid.uuid4().hex
+        #     print(new_device)
+        #     response = render(request, 'cart.html')
+        #     response.set_cookie('device', new_device)
+        #     return response
+        # #     customer = Customer.objects.create(device=new_device)
+        # # else:
+        # #     print('cart --- device exist')
         customer, created = Customer.objects.get_or_create(device=device)
+        print('cart --- customer with device created')
+        # customer, created = Customer.objects.get_or_create(device=device)
     else:
         customer = request.user
     order, created = Order.objects.get_or_create(customer=customer, status='ordering')
@@ -57,11 +71,12 @@ def cart(request):
             data['price_with_code'] = order.price_with_code
 
         # check code
+        # if request.user.is_authenticated:
         if code:
             try:
                 code_discount = CodeDiscount.objects.get(code__exact=code, start_date__lte=now, end_date__gte=now,
                                                          active=True)
-                user_orders = Order.objects.filter(customer=request.user)
+                user_orders = Order.objects.filter(customer=customer)
                 print(user_orders)
                 for user_order in user_orders:
                     if user_order.code == code_discount and user_order.status == 'ordering':
@@ -78,6 +93,8 @@ def cart(request):
                     data['order_price_with_discount'] = order.total_price_with_discount
                     data['total_discount'] = order.total_discount
                     data['price_with_code'] = order.price_with_code
+                    data['discount_value'] = order.code.discount_value
+                    print(data['discount_value'])
 
             except ObjectDoesNotExist:
                 # print('no')
@@ -119,6 +136,11 @@ def checkout(request):
     if everything be ok, it pass the values to template for checkout
     """
     order, created = Order.objects.get_or_create(customer=request.user, status='ordering')
+
+    # # delete device customer
+    # device = request.COOKIES.get('device')
+    # device_customer = Customer.objects.get(device=device)
+    # device_customer.delete()
 
     # check item inventory with item quantity in cart
     shopping_cart = order.shoppingcart_set.all()
@@ -174,8 +196,4 @@ def submit_order(request):
     order.reduce_inventory()
     return render(request, 'end_order.html')
 
-
 # ------------------------------------------------------------------------
-
-
-

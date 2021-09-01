@@ -4,9 +4,7 @@ from .views import search_view, search_result, home
 
 urlpatterns = [
     path('', home, name='home'),
-
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
-    # path('search/', SearchResultsView.as_view(), name='search_results'),
     path('search/', search_result, name='search_results'),
     path(r'^ajax_calls/search/', search_view, name='search'),
 

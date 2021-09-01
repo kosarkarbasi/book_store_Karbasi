@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -24,6 +24,7 @@ class BookListView(generic.ListView):
     context_object_name = 'books'
 
 
+# ------------------------------------------------------------------------
 def book_after_search(request):
     """
     Method for search ====== fail :/
@@ -34,6 +35,7 @@ def book_after_search(request):
         return render(request, 'search_results.html')
 
 
+# ------------------------------------------------------------------------
 def product_detail(request, pk=None):
     """
     Function-based view for book_detail
@@ -48,8 +50,24 @@ def product_detail(request, pk=None):
     if request.method == 'POST':
         book = Book.objects.get(id=pk)
         if request.user.is_anonymous:
-            device = request.COOKIES['device']
+            # try:
+            device = request.COOKIES.get('device')
+            # except:
+            #     new_device = uuid.uuid4().hex
+            #     response = redirect('cart')
+            #     response.set_cookie('device', new_device)
+            #     return response
+            # new_device = update_cookie(request, device)
+            # print(new_device)
             customer, created = Customer.objects.get_or_create(device=device)
+            # if Customer.objects.filter(device=device).exists():
+            #     print('product_detail --- new device create')
+            #     new_device = uuid.uuid4().hex
+            #     response = HttpResponse('set cookie')
+            #     response.set_cookie('device', new_device)
+            #     customer = Customer.objects.create(device=new_device)
+            # else:
+            #     customer, created = Customer.objects.get_or_create(device=device)
         else:
             customer = request.user
 
@@ -74,6 +92,7 @@ def product_detail(request, pk=None):
     return render(request, 'book_detail.html', context)
 
 
+# ------------------------------------------------------------------------
 def category(request, pk):
     """
     Get pk of category and pass books with that category to book_list.html
@@ -85,6 +104,7 @@ def category(request, pk):
     return render(request, 'book_list.html', {'books': books})
 
 
+# ------------------------------------------------------------------------
 def author(request, pk):
     """
     Get pk of category and pass books with that category to book_list.html
@@ -96,6 +116,7 @@ def author(request, pk):
     return render(request, 'book_list.html', {'books': books})
 
 
+# ------------------------------------------------------------------------
 class BookCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Book
     fields = ('title', 'description', 'author', 'category', 'inventory', 'price', 'discount', 'image', 'score')
@@ -117,6 +138,7 @@ class BookCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super(BookCreateView, self).dispatch(request, *args, **kwargs)
 
 
+# ------------------------------------------------------------------------
 class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = Book
     fields = ('title', 'description', 'author', 'category', 'inventory', 'price', 'discount', 'image', 'score')
@@ -133,6 +155,7 @@ class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
         return super(BookUpdateView, self).dispatch(request, *args, **kwargs)
 
 
+# ------------------------------------------------------------------------
 class AuthorCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Author
     fields = ('first_name', 'last_name')
@@ -152,6 +175,7 @@ class AuthorCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
         return reverse('book_list')
 
 
+# ------------------------------------------------------------------------
 class CategoryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Category
     fields = ('name',)

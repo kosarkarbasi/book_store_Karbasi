@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -5,8 +7,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.contrib.auth import login, authenticate, update_session_auth_hash, logout
 from django.views.generic import CreateView, UpdateView, DeleteView
+
+from order.models import Order
 from .forms import SignUpForm, AddressForm
 from .models import User, Customer, Address, Personnel
 from django.contrib.auth.models import Group
@@ -23,6 +27,17 @@ def registration_view(request):
             User.objects.create_user(email=email, password=raw_password, device=device, type='CUSTOMER')
             account = authenticate(request, email=email, password=raw_password)
             if account is not None:
+
+                # match anonymous shopping carts to login user
+                current_device_order = Order.objects.get_or_create(device=device, status='ordering',
+                                                                   customer__email__isnull=True)
+                current_device_order.customer.email = email
+                print('current_device_order', current_device_order)
+                # device_shopping_items = current_device_order.shoppingcart_set.all()
+                # for items in device_shopping_items:
+                #     current_device_order.shoppingcart_set.add(items)
+                # device_shopping_items.delete()
+
                 login(request, account)
             else:
                 context['registration_form'] = form
@@ -58,11 +73,38 @@ def login_view(request):
             email = request.POST.get('email')
             password = request.POST.get('password')
             user = authenticate(email=email, password=password)
+
             if user is not None:
                 if user.is_active:
+
+                    # match anonymous shopping carts to login user
+                    device = request.COOKIES['device']
+                    # try:
+                    #     device = request.COOKIES['device']
+                    #     response = redirect('users:profile')
+                    # except:
+                    #     device = uuid.uuid4().hex
+                    #     response = redirect('users:profile')
+                    #     response.set_cookie('device', device)
+                    # response.set_cookie('cookie_name2', 'cookie_name2_value')
+                    order_with_same_device = Order.objects.filter(customer__device=device, status='ordering').exists()
+                    if order_with_same_device:
+                        print('login --- order exist -- add orders')
+                        current_device_order = Order.objects.get(customer__device=device, status='ordering')
+                        print(current_device_order)
+                        device_shopping_items = current_device_order.shoppingcart_set.all()
+                        print(device_shopping_items)
+                        user_order = Order.objects.get_or_create(customer=user, status='ordering')
+                        for item in device_shopping_items:
+                            print(item)
+                            user_order.shoppingcart_set.add(item)
+                        print(user_order)
+                        current_device_order.delete()
+
                     login(request, user)
                     # Redirect to index page.
-                    return redirect("users:profile")
+                    return redirect('users:profile')
+                    # return response
                 else:
                     # Return a 'disabled account' error message
                     messages.error(request, 'اکانت شما غیرفعال شده است')
@@ -75,6 +117,20 @@ def login_view(request):
             # the login is a  GET request, so just show the user the login form.
             return render(request, 'registration/login.html')
     return redirect('users:profile')
+
+
+# -------------------------------------------------------------------
+@login_required()
+def logout_view(request):
+    response = redirect('home')
+    response.delete_cookie('device')
+    print('deleted')
+
+    logout(request)
+    device = uuid.uuid4().hex
+    response.set_cookie('device', device, 30)
+    # response.delete_cookie('cookie_name2')
+    return response
 
 
 # -------------------------------------------------------------------
@@ -91,9 +147,7 @@ def change_password(request):
             messages.error(request, 'لطفا اطلاعات را به درستی پر کنید')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'registration/password_change_form.html', {
-        'form': form
-    })
+    return render(request, 'registration/password_change_form.html', {'form': form})
 
 
 # -------------------------------------------------------------------
@@ -147,13 +201,11 @@ def activate_address(request, postal_code):
     :param postal_code: postal code of address
     """
     addresses = Address.objects.filter(user=request.user)
-    # address_postal_code = request.POST.get(postal_code)
-    print(postal_code)
-    other_addresses = Address.objects.exclude(postal_code__exact=postal_code)
+    other_addresses = Address.objects.exclude(postal_code__exact=postal_code, user=request.user)
     for add in other_addresses:
         add.active = False
         add.save()
-    address = Address.objects.get(postal_code=postal_code)
+    address = Address.objects.get(postal_code=postal_code, user=request.user)
     address.active = True
     address.save()
     messages.success(request, 'آدرس با موفقیت فعال شد')

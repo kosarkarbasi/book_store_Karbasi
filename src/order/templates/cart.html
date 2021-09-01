@@ -121,7 +121,11 @@
                                        aria-label="Coupon code"
                                        type="text" name="code" id="code">
                                 <div class="input-group-append">
-                                    <button class="btn btn-theme code_submit" type="submit">کد تخفیف</button>
+{#                                    {% if user.is_authenticated %}#}
+                                        <button class="btn btn-theme code_submit" type="submit">کد تخفیف</button>
+{#                                    {% else %}#}
+{#                                        <a class="btn btn-theme" type="button">کد تخفیف</a>#}
+{#                                    {% endif %}#}
                                 </div>
 
                             </div>
@@ -158,7 +162,7 @@
                         <hr class="my-1">
                         <div class="d-flex">
                             <h4>کد تخفیف</h4>
-                            <div class="ml-auto font-weight-bold">{{ order.code.discount_value }}%</div>
+                            <div class="ml-auto font-weight-bold" id="discount_value">{{ order.code.discount_value }}%</div>
                         </div>
                         <div class="d-flex">
                             <h4>هزینه ارسال</h4>
@@ -261,6 +265,7 @@
                     success: function (response) {
                         if (typeof response.error_code === 'undefined' && typeof response.warning_code === 'undefined') {
                             $(`#price_with_code`).text(response.price_with_code.toLocaleString() + " ریال")
+                            $(`#discount_value`).text(response.discount_value + " %")
 
                             iziToast.success({
                                 title: ':)',
@@ -277,6 +282,12 @@
                                 message: response.warning_code
                             });
                         }
+                    },
+                    error: function (response) {
+                        iziToast.error({
+                            title: ':(',
+                            message: response.error
+                        });
                     }
                 });
 
