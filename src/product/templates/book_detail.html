@@ -41,31 +41,19 @@
                             </h5>
                         {% endif %}
                         <p class="available-stock"><span> موجودی {{ book.inventory }} عدد</span>
-                        <p>
+                        </p>
                         <h4>دسته بندی:</h4>
-                        <p class="available-stock"
-                        {% for category in book.category.all %}
-                            <span>{{ category }}</span>
-                        {% endfor %}
-                        <p>
+                        <p class="available-stock">
+                            {% for category in book.category.all %}
+                                <span>{{ category }}</span>,
+                            {% endfor %}
+                        </p>
                         <h4>معرفی کتاب</h4>
-                        {#                        <p class="text-justify">{{ book.description|truncatewords:15 }}</p>#}
-                        {% if book.description|wordcount > 56 %}
-                            <details>
-                                <summary class="text-justify"
-                                         style="display: inline">{{ book.description|slice:":120" }}...
-                                </summary>
-                                <p class="text-justify" style="display: inline">{{ book.description|slice:"121:" }}</p>
-                            </details>
-                        {% else %}
-                            <p class="text-justify">
-                                {{ book.description|safe|linebreaks }}
-                            </p>
-                        {% endif %}
+                        <p class="text-justify">{{ book.description }}</p>
                         <br>
                         <h4>نویسندگان:</h4>
                         {% for auther in book.author.all %}
-                            <p>{{ auther }}</p>
+                            <p>{{ auther }},</p>
                         {% endfor %}
                         <div class="form-group size-st p-2">
                             {% if book.score %}
@@ -98,20 +86,20 @@
                         {% else %}
 
                             <div class="price-box-bar">
-                                <form method="post" action="{% url 'book_detail' book.pk %}">
+                                <form id="quantity_form" method="post" action="{% url 'book_detail' book.pk %}">
                                     {% csrf_token %}
                                     <ul>
                                         <li>
                                             <div class="form-group quantity-box">
                                                 <label for="quantity" class="control-label">تعداد</label>
-                                                <input id="quantity" name="quantity" class="form-control" value="0"
-                                                       min="0"
+                                                <input id="quantity" name="quantity" class="form-control" value="1"
+                                                       min="1"
                                                        max="30" type="number">
                                             </div>
                                         </li>
                                         <li>
                                             <div class="cart-and-bay-btn">
-                                                <input type="submit" id="submit_btn"
+                                                <input type="submit" id="submit_btn_quantity"
                                                        class="btn hvr-hover mt-4 text-light"
                                                        data-fancybox-close=""
                                                        value="افزودن به سبد خرید">
@@ -120,9 +108,9 @@
                                     </ul>
                                 </form>
                                 <div class="cart-and-bay-btn">
-                                    <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">بازگشت
-                                        به
-                                        کتاب ها</a>
+                                    <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'book_list' %}">
+                                        بازگشت به کتاب ها
+                                    </a>
                                     {% if user.is_superuser %}
                                         <a class="btn btn-info" data-fancybox-close=""
                                            href="{% url 'book_update' book.pk %}">
@@ -155,10 +143,14 @@
                                                     <ul>
                                                         <li><a href="{{ books.get_absolute_url }}" data-toggle="tooltip"
                                                                data-placement="right"
-                                                               title="View"><i
-                                                                class="fas fa-eye"></i></a></li>
-                                                        <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                                               title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                                               title="جزئیات"><i class="fas fa-eye"></i></a></li>
+                                                        {% if user.is_superuser or user.is_staff %}
+                                                            <li><a href="{% url 'book_update' books.pk %}"
+                                                                   data-toggle="tooltip"
+                                                                   data-placement="right"
+                                                                   title="به روز رسانی"><i class="fas fa-sync-alt"></i></a>
+                                                        {% endif %}
+                                                        </li>
                                                         <li><a href="#" data-toggle="tooltip" data-placement="right"
                                                                title="Add to Wishlist"><i class="far fa-heart"></i></a>
                                                         </li>
@@ -189,20 +181,34 @@
 {% block script %}
     <script>
         $(document).ready(function () {
-            var toast = document.querySelector('#submit_btn'); // Selector of your toast
-            iziToast.error({
-                message: '{{ inventory_message }}'
-            }, toast);
+            $("#submit_btn_quantity").click(function (e) {
+                e.preventDefault()
+                let quantity = $(`#quantity`).val()
+                console.log(quantity)
+                let url = $(`#quantity_form`).attr('action')
+                console.log(url)
 
-
-            $("#submit_btn").onclick("submit", function (e) {
                 $.ajax({
-                    url:{% url 'cart' %}
-                });
-                e.preventDefault();
-                //Code: Action (like ajax...)
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'quantity': quantity,
+                    },
+                    success: function (response) {
+                        iziToast.error({
+                            title: ':)',
+                            message: response.error_inventory
+                        });
+                    },
+                    error: function (response) {
+                        console.log('error', response);
+                    }
+                })
             })
-        })
+        });
+
+    </script>
 
     </script>
 {% endblock script %}

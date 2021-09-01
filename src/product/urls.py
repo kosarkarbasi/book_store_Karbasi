@@ -4,7 +4,7 @@ import product.views as views
 urlpatterns = [
     path('books/', views.BookListView.as_view(), name='book_list'),
     path(r'books/detail/<int:pk>', views.product_detail, name='book_detail'),
-    path('books/search/', views.book_after_search, name='book_search'),
+    # path('books/search/', views.book_after_search, name='book_search'),
     path('category/<int:pk>', views.category, name='category'),
     path('author/<int:pk>', views.author, name='author'),
 

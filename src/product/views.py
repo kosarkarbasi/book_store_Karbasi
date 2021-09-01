@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -25,14 +25,14 @@ class BookListView(generic.ListView):
 
 
 # ------------------------------------------------------------------------
-def book_after_search(request):
-    """
-    Method for search ====== fail :/
-    """
-    if request.method == 'GET':
-        books = request.GET.get()
-        print(books)
-        return render(request, 'search_results.html')
+# def book_after_search(request):
+#     """
+#     Method for search ====== fail :/
+#     """
+#     if request.method == 'GET':
+#         books = request.GET.get()
+#         print(books)
+#         return render(request, 'search_results.html')
 
 
 # ------------------------------------------------------------------------
@@ -73,17 +73,15 @@ def product_detail(request, pk=None):
 
         order, created = Order.objects.get_or_create(customer=customer, status='ordering')
         shopping_cart, created = ShoppingCart.objects.get_or_create(order=order, item=book)
+        book_quantity = request.POST.get('quantity')
+        shopping_cart.quantity += int(book_quantity)
 
-        shopping_cart.quantity += int(request.POST['quantity'])
-
+        data = {}
         if int(shopping_cart.quantity) > book.inventory:
-            messages.error(request, 'موجودی کتاب کافی نیست')
+            data['error_inventory'] = 'موجودی کتاب کافی نیست'
             shopping_cart.delete()
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        elif int(shopping_cart.quantity) == 0:
-            messages.error(request, 'تعداد وارد شده 0 عدد می باشد')
-            shopping_cart.delete()
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return JsonResponse(data, safe=False)
+
         shopping_cart.update_quantity(shopping_cart.quantity)
         shopping_cart.save()
         return redirect('cart')

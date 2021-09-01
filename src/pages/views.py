@@ -13,19 +13,6 @@ from product.models import Book
 
 
 # --------------------------------------------------------------------
-class SearchResultsView(ListView):
-    model = Book
-    template_name = 'search_results.html'
-
-    def get_queryset(self):
-        query = self.request.GET.get('search')
-        search_result = Book.objects.filter(
-            Q(title__icontains=query) | Q(author__first_name__icontains=query) | Q(author__last_name__icontains=query)
-        )
-        return search_result
-
-
-# --------------------------------------------------------------------
 def search_view(request):
     if request.is_ajax():
         query = request.GET.get('term')
@@ -49,8 +36,8 @@ def search_view(request):
 # --------------------------------------------------------------------
 def search_result(request):
     search_term = request.GET.get('search')
-    book = Book.objects.get(title__exact=search_term)
-    return render(request, 'search_results.html', {'book': book})
+    books = Book.objects.filter(title__exact=search_term)
+    return render(request, 'book_list.html', {'books': books})
 
 
 # --------------------------------------------------------------------
