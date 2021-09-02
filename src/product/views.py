@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -22,6 +23,11 @@ class BookListView(generic.ListView):
     model = Book
     template_name = 'book_list.html'
     context_object_name = 'books'
+    paginate_by = 6
+
+    def dispatch(self, request, *args, **kwargs):
+        # data[]
+        return super(BookListView, self).dispatch(request, *args, **kwargs)
 
 
 # ------------------------------------------------------------------------
@@ -52,22 +58,8 @@ def product_detail(request, pk=None):
         if request.user.is_anonymous:
             # try:
             device = request.COOKIES.get('device')
-            # except:
-            #     new_device = uuid.uuid4().hex
-            #     response = redirect('cart')
-            #     response.set_cookie('device', new_device)
-            #     return response
-            # new_device = update_cookie(request, device)
-            # print(new_device)
             customer, created = Customer.objects.get_or_create(device=device)
-            # if Customer.objects.filter(device=device).exists():
-            #     print('product_detail --- new device create')
-            #     new_device = uuid.uuid4().hex
-            #     response = HttpResponse('set cookie')
-            #     response.set_cookie('device', new_device)
-            #     customer = Customer.objects.create(device=new_device)
-            # else:
-            #     customer, created = Customer.objects.get_or_create(device=device)
+
         else:
             customer = request.user
 

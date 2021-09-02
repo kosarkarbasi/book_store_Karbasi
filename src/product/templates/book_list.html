@@ -10,7 +10,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>Shop</h2>
+                    <h2>کتابان</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'home' %}">خانه</a></li>
                         <li class="breadcrumb-item active">کتاب ها</li>
@@ -23,141 +23,215 @@
 
     <!-- Start Shop Page  -->
     <div class="shop-box-inner">
-    <div class="container">
-    <div class="row">
-    <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
-        <div class="product-categori">
-            <div class="search-product">
-                <form action="#">
-                    <input class="form-control" placeholder="Search here..." type="text">
-                    <button type="submit"><i class="fa fa-search"></i></button>
-                </form>
-            </div>
-            <div class="filter-sidebar-left">
-                <div class="title-left">
-                    <h3>دسته بندی ها</h3>
-                </div>
-                <div class="list-group list-group-collapse list-group-sm list-group-tree"
-                     id="list-group-men" data-children=".sub-men">
-                    {% for category in all_categories %}
-                        <div class="list-group-collapse sub-men">
-                            <a class="list-group-item list-group-item-action" href="#sub-men{{ category.pk }}"
-                               data-toggle="collapse" aria-expanded="false"
-                               aria-controls="sub-men{{ category.pk }}">{{ category.name }}
-                                <small class="text-muted">({{ category.books.count }})</small>
-                            </a>
-                            <div class="collapse" id="sub-men{{ category.pk }}" data-parent="#list-group-men">
-                                <div class="list-group">
-                                    {% for book in category.books.all %}
-                                        <a href="{% url 'book_detail' book.id %}"
-                                           class="list-group-item list-group-item-action">{{ book.title }}
-                                            <small class="text-muted">({{ book.inventory }})</small></a>
-                                    {% endfor %}
-                                </div>
-                            </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
+                    <div class="product-categori">
+                        <div class="search-product">
+                            <form action="{% url 'search_results' %}">
+                                <input class="form-control" placeholder="Search here..." name="search" type="text">
+                                <button type="submit"><i class="fa fa-search"></i></button>
+                            </form>
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="filter-price-left">
-                <div class="title-left">
-                    <h3>قیمت</h3>
-                </div>
-                <div class="price-box-slider">
-                    <div id="slider-range"></div>
-                    <p>
-                        <input type="text" id="amount" readonly
-                               style="border:0; color:#fbb714; font-weight:bold;">
-                        <button class="btn hvr-hover" type="submit">Filter</button>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-9 col-lg-9 col-sm-12 col-xs-12 shop-content-right">
-    <div class="right-product-box">
-        <div class="product-item-filter row">
-            <div class="col-12 col-sm-8 text-center text-sm-left">
-                <div class="toolbar-sorter-right">
-                    <span>Sort by </span>
-                    <select id="basic" class="selectpicker show-tick form-control"
-                            data-placeholder="$ USD">
-                        <option data-display="Select">Nothing</option>
-                        <option value="1">Popularity</option>
-                        <option value="2">High Price → High Price</option>
-                        <option value="3">Low Price → High Price</option>
-                        <option value="4">Best Selling</option>
-                    </select>
-                </div>
-                <p>Showing all 4 results</p>
-            </div>
-            <div class="col-12 col-sm-4 text-center text-sm-right">
-                <ul class="nav nav-tabs ml-auto">
-                    <li>
-                        <a class="nav-link active" href="#grid-view" data-toggle="tab"> <i
-                                class="fa fa-th"></i> </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#list-view" data-toggle="tab"> <i
-                                class="fa fa-list-ul"></i> </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="row product-categorie-box">
-            <div class="tab-content">
-                <div class="text-right">
-                    {% include 'message.html' %}
-                </div>
-                <div role="tabpanel" class="tab-pane fade show active" id="grid-view">
-                    <div class="row">
-                        {% for book in books %}
-                            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
-                                <div class="products-single fix">
-                                    <div class="box-img-hover">
-                                        {% if book.discount is not None %}
-                                            <div class="type-lb">
-                                                <p class="sale">تخفیف</p>
+                        <div class="filter-sidebar-left">
+                            <div class="title-left">
+                                <h3>دسته بندی ها</h3>
+                            </div>
+                            <div class="list-group list-group-collapse list-group-sm list-group-tree"
+                                 id="list-group-men" data-children=".sub-men">
+                                {% for category in all_categories %}
+                                    <div class="list-group-collapse sub-men">
+                                        <a class="list-group-item list-group-item-action"
+                                           href="#sub-men{{ category.pk }}"
+                                           data-toggle="collapse" aria-expanded="false"
+                                           aria-controls="sub-men{{ category.pk }}">{{ category.name }}
+                                            <small class="text-muted">({{ category.books.count }})</small>
+                                        </a>
+                                        <div class="collapse" id="sub-men{{ category.pk }}"
+                                             data-parent="#list-group-men">
+                                            <div class="list-group">
+                                                {% for book in category.books.all %}
+                                                    <a href="{% url 'book_detail' book.id %}"
+                                                       class="list-group-item list-group-item-action">{{ book.title }}
+                                                        <small class="text-muted">({{ book.inventory }})</small></a>
+                                                {% endfor %}
                                             </div>
-                                        {% endif %}
-                                        {% ifequal book.inventory 0 %}
-                                            <div class="type-lb">
-                                                <p class="sale">ناموجود</p>
-                                            </div>
-                                        {% endifequal %}
-                                        <img src="{{ book.image.url }}" class="img-fluid" alt="Image">
-                                        <div class="mask-icon">
-                                            <ul>
-                                                <li><a href="{{ book.get_absolute_url }}" data-toggle="tooltip"
-                                                       data-placement="right"
-                                                       title="جزئیات"><i class="fas fa-eye"></i></a></li>
-                                                {% if user.is_superuser or user.is_staff %}
-                                                    <li><a href="{% url 'book_update' book.pk %}" data-toggle="tooltip"
-                                                           data-placement="right"
-                                                           title="به روز رسانی"><i class="fas fa-sync-alt"></i></a>
-                                                {% endif %}
-                                                </li>
-                                                <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                                       title="Add to Wishlist"><i class="far fa-heart"></i></a>
-                                                </li>
-                                            </ul>
-                                            <a class="cart" href="{% url 'cart' %}">افزودن به سبد خرید</a>
                                         </div>
                                     </div>
-                                    <div class="why-text">
-                                        <h4>{{ book.title }}</h4>
-                                        <h5>{{ book.price }}</h5>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="filter-price-left">
+                            <div class="title-left">
+                                <h3>قیمت</h3>
+                            </div>
+                            <div class="price-box-slider">
+                                <div id="slider-range"></div>
+                                <p>
+                                    <input type="text" id="amount" readonly
+                                           style="border:0; color:#fbb714; font-weight:bold;">
+                                    <button class="btn hvr-hover" type="submit">Filter</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-sm-12 col-xs-12 shop-content-right">
+                    <div class="right-product-box">
+                        <div class="product-item-filter row">
+                            <div class="col-12 col-sm-8 text-center text-sm-left">
+                                <div class="toolbar-sorter-right">
+                                    <span>Sort by </span>
+                                    <select id="basic" class="selectpicker show-tick form-control"
+                                            data-placeholder="$ USD">
+                                        <option data-display="Select">Nothing</option>
+                                        <option value="1">Popularity</option>
+                                        <option value="2">High Price → High Price</option>
+                                        <option value="3">Low Price → High Price</option>
+                                        <option value="4">Best Selling</option>
+                                    </select>
+                                </div>
+                                <p>Showing all 4 results</p>
+                            </div>
+                            <div class="col-12 col-sm-4 text-center text-sm-right">
+                                <ul class="nav nav-tabs ml-auto">
+                                    <li>
+                                        <a class="nav-link active" href="#grid-view" data-toggle="tab"> <i
+                                                class="fa fa-th"></i> </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" href="#list-view" data-toggle="tab"> <i
+                                                class="fa fa-list-ul"></i> </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row product-categorie-box">
+                            <div class="tab-content">
+                                <div class="text-right">
+                                    {% include 'message.html' %}
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade show active" id="grid-view">
+                                    <div class="row">
+                                        {% for book in books %}
+                                            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                <div class="products-single fix">
+                                                    <div class="box-img-hover">
+                                                        {% if book.discount is not None %}
+                                                            <div class="type-lb">
+                                                                <p class="sale">تخفیف</p>
+                                                            </div>
+                                                        {% endif %}
+                                                        {% ifequal book.inventory 0 %}
+                                                            <div class="type-lb">
+                                                                <p class="sale">ناموجود</p>
+                                                            </div>
+                                                        {% endifequal %}
+                                                        <img src="{{ book.image.url }}" class="img-fluid" alt="Image">
+                                                        <div class="mask-icon">
+                                                            <ul>
+                                                                <li><a href="{{ book.get_absolute_url }}"
+                                                                       data-toggle="tooltip"
+                                                                       data-placement="right"
+                                                                       title="جزئیات"><i class="fas fa-eye"></i></a>
+                                                                </li>
+                                                                {% if user.is_superuser or user.is_staff %}
+                                                                    <li><a href="{% url 'book_update' book.pk %}"
+                                                                           data-toggle="tooltip"
+                                                                           data-placement="right"
+                                                                           title="به روز رسانی"><i
+                                                                        class="fas fa-sync-alt"></i></a>
+                                                                {% endif %}
+                                                                </li>
+                                                                <li><a href="#" data-toggle="tooltip"
+                                                                       data-placement="right"
+                                                                       title="Add to Wishlist"><i
+                                                                        class="far fa-heart"></i></a>
+                                                                </li>
+                                                            </ul>
+                                                            <a class="cart" href="{% url 'cart' %}">افزودن به سبد
+                                                                خرید</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="why-text">
+                                                        <h4>{{ book.title }}</h4>
+                                                        <h5>{{ book.price }}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
+
+                        </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
     <!-- End Shop Page -->
+    <!--Pagination-->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center ml-5 p-3">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">صفحه قبل</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1"
+                       aria-disabled="true">صفحه قبل</a>
+                </li>
+            {% endif %}
+
+            {% if page_obj.number|add:'-4' > 1 %}
+                <li class="page-item"><a class="page-link"
+                                         href="?page={{ page_obj.number|add:'-5' }}">&hellip;</a>
+                </li>
+            {% endif %}
+
+            {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <li class="page-item active" aria-current="page">
+              <span class="page-link">
+                {{ i }}
+                <span class="sr-only">(current)</span>
+              </span>
+                    </li>
+                {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
+                <li class="page-item"><a class="page-link"
+                                         href="?page={{ page_obj.number|add:'5' }}">&hellip;</a>
+                </li>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">صفحه بعد</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">صفحه بعد</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <!--end of Pagination-->
+
+
+
 
 
 {% endblock content %}
