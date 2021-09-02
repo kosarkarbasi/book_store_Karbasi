@@ -3,7 +3,7 @@ import product.views as views
 
 urlpatterns = [
     path('books/', views.BookListView.as_view(), name='book_list'),
-    path(r'books/detail/<int:pk>', views.product_detail, name='book_detail'),
+    path('books/detail/<int:pk>', views.product_detail, name='book_detail'),
     path('category/<int:pk>', views.category, name='category'),
     path('author/<int:pk>', views.author, name='author'),
 
