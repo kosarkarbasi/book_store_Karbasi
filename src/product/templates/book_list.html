@@ -28,13 +28,10 @@
                 <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
                     <div class="product-categori">
                         <div class="search-product">
-                            {#                            <form>#}
                             <div class="ui-widget">
-                                <input name="search" id="inner-search" type="text" class="form-control"
-                                       placeholder="Search here...">
+                                <input name="search" id="inner-search" type="text" class="form-control">
                             </div>
                             <button type="submit"><i class="fa fa-search"></i></button>
-                            {#                            </form>#}
                         </div>
                         <div class="filter-sidebar-left">
                             <div class="title-left">
@@ -84,18 +81,15 @@
                         <div class="product-item-filter row">
                             <div class="col-12 col-sm-8 text-center text-sm-left">
                                 <div class="toolbar-sorter-right">
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                            Dropdown button
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                        </ul>
-                                    </div>
+                                    <form method="GET" action="{% url 'sort' %}">
+                                        {% csrf_token %}
+                                        <select name="sort">
+                                            <option value="0">---</option>
+                                            <option value="1">بیشترین قیمت</option>
+                                            <option value="2">کمترین قیمت</option>
+                                        </select>
+                                        <button class="btn btn-neutral" type="submit">مرتب سازی بر اساس</button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-4 text-center text-sm-right">
@@ -169,17 +163,11 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
     <!-- End Shop Page -->
     <!--Pagination-->
@@ -252,69 +240,11 @@
                     GetRedirectPage(ui.item.title, ui.item.value);
                 }
             });
+        })
 
-            /*
-
-
-
-
-
-
-
-            {#for sort by#}
-            $("#sort").change(function (e) {
-                e.preventDefault()
-
-                var sortBy = $(this).val()
-                console.log(sortBy)
-                $.ajax({
-                    type: "GET",
-
-
-
-
-
-
-
-            {#url: '{% url 'sort' %}',#}
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        sortBy: sortBy
-                    },
-                    success: function (response) {
-
-
-
-
-
-
-
-            {#$.each(response.books, function () {#}
-
-
-
-
-
-
-
-            {#$('#title').text(response.queryset.title)#}
-                        $('.product-categorie-box').html(response.books)
-                        //});
-                    },
-                    error: function (response) {
-                        iziToast.error({
-                            title: ':(',
-                            message: 'error'
-                        });
-                    }
-                });
-            })
-
-        });*/
-
-            function GetRedirectPage(label, slug) {
-                window.location.href = "{% url 'search_results' %}" + '?search=' + slug;
-            }
+        function GetRedirectPage(label, slug) {
+            window.location.href = "{% url 'search_results' %}" + '?search=' + slug;
+        }
 
     </script>
 {% endblock script %}

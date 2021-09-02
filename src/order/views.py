@@ -21,16 +21,6 @@ def cart(request):
     """
     if request.user.is_anonymous:
         device = request.COOKIES.get('device')
-        # if Customer.objects.filter(device=device).exists():
-        #     print('cart --- new device create')
-        #     new_device = uuid.uuid4().hex
-        #     print(new_device)
-        #     response = render(request, 'cart.html')
-        #     response.set_cookie('device', new_device)
-        #     return response
-        # #     customer = Customer.objects.create(device=new_device)
-        # # else:
-        # #     print('cart --- device exist')
         customer, created = Customer.objects.get_or_create(device=device)
         print('cart --- customer with device created')
         # customer, created = Customer.objects.get_or_create(device=device)
@@ -71,7 +61,6 @@ def cart(request):
             data['price_with_code'] = order.price_with_code
 
         # check code
-        # if request.user.is_authenticated:
         if code:
             try:
                 code_discount = CodeDiscount.objects.get(code__exact=code, start_date__lte=now, end_date__gte=now,
@@ -81,13 +70,17 @@ def cart(request):
                 for user_order in user_orders:
                     if user_order.code == code_discount and user_order.status == 'ordering':
                         data['warning_code'] = "این کد قبلا اعمال شده است"
+                        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
                     elif user_order.code == code_discount and user_order.status == 'submit':
                         data['error_code'] = "این کد قبلا استفاده شده است"
+                        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
                     elif user_order.status == 'ordering' and user_order.code is not None:
                         # order.save_code() # if we want to replace code
                         data['warning_code'] = "شما مجاز به استفاده از یک کد هستید"
+                        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
                     elif code_discount.limit == 0:
                         data['error_code'] = "تعداد استفاده از این کد تمام شده است"
+                        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
                         # code_discount.active = False
                         # code_discount.save()
                 else:

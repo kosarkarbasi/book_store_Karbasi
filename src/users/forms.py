@@ -44,6 +44,6 @@ class AddressForm(forms.ModelForm):
         super(AddressForm, self).clean()
         postal_code = self.cleaned_data.get('postal_code')
         if len(str(postal_code)) != 10:
-            messages.error(request=self.request, message='لطفا کد پستی 10 زقمی خود را وارد کنید')
+            messages.error(request=self.request, message='لطفا کد پستی 10 رقمی خود را وارد کنید')
             self._errors['postal_code'] = self.error_class(['کد پستی اشتباه است'])
         return postal_code

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.template import loader
@@ -210,5 +210,14 @@ def most_least_price(request):
 
 
 def sort(request):
-    value = request.GET.get('sort')
-    print(value)
+    if request.method == 'GET':
+        value = request.GET.get('sort', None)
+
+        if value == '1':
+            books = Book.objects.all().order_by('-price')
+        elif value == '2':
+            books = Book.objects.all().order_by('price')
+        else:
+            books = Book.objects.all()
+
+        return render(request, 'book_list.html', {'books': books})
