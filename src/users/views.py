@@ -5,15 +5,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, update_session_auth_hash, logout
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import CreateView, UpdateView, DeleteView
-
 from order.models import Order
 from .forms import SignUpForm, AddressForm
 from .models import User, Customer, Address, Personnel
 from django.contrib.auth.models import Group
+from .tokens import account_activation_token
 
 
 def registration_view(request):
@@ -21,30 +26,33 @@ def registration_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            device = request.COOKIES['device']
+            try:
+                device = request.COOKIES['device']
+                print('home ---  has device')
+            except:
+                device = uuid.uuid4().hex
+                response = redirect('home')
+                response.set_cookie('device', device)
+                print('home ---  create device')
+                return response
             email = form.cleaned_data.get('email')
             raw_password = form.cleaned_data.get('password1')
-            User.objects.create_user(email=email, password=raw_password, device=device, type='CUSTOMER')
-            account = authenticate(request, email=email, password=raw_password)
-            if account is not None:
+            user = User.objects.create_user(email=email, password=raw_password, device=device, type='CUSTOMER')
+            user.is_active = False
+            user.save()
+            current_site = get_current_site(request)
+            mail_subject = 'فعال سازی حساب کتابان'
+            message = render_to_string('registration/acc_active_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            user.email_user(mail_subject, message)
 
-                # match anonymous shopping carts to login user
-                current_device_order = Order.objects.get_or_create(device=device, status='ordering',
-                                                                   customer__email__isnull=True)
-                current_device_order.customer.email = email
-                print('current_device_order', current_device_order)
-                # device_shopping_items = current_device_order.shoppingcart_set.all()
-                # for items in device_shopping_items:
-                #     current_device_order.shoppingcart_set.add(items)
-                # device_shopping_items.delete()
+            messages.success(request, 'لطفا ایمیل خود را برای تایید ایمیل وارد شده چک کنید')
 
-                login(request, account)
-            else:
-                context['registration_form'] = form
-                messages.error(request, 'یک چیزی اشتباه شده!')
-                return render(request, 'registration/register.html', context)
-            return redirect('users:profile')
-            # return redirect('home')
+            return redirect('users:login')
         elif User.objects.filter(email__exact=form.cleaned_data.get('email')).exists():
             messages.error(request, 'این ایمیل قبلا ثبت نام شده است')
         elif form.cleaned_data.get('password1') is not form.cleaned_data.get('password2'):
@@ -57,7 +65,27 @@ def registration_view(request):
     return render(request, 'registration/register.html', context)
 
 
+# -------------------------------------------------------------------
+def activate(request, uidb64, token):
+    """ this method is for registration email activation """
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        # return redirect('home')
+        return HttpResponse('فعال سازی انجام شد. حالا با خیال راحت لاگین کنید')
+    else:
+        return HttpResponse('لینک منقضی است')
+
+
+# -------------------------------------------------------------------
 def validate_email(request):
+    """ use for ajax """
     email = request.GET.get('email')
     data = {
         'is_taken': User.objects.filter(email__iexact=email).exists()
@@ -78,27 +106,21 @@ def login_view(request):
                 if user.is_active:
 
                     # match anonymous shopping carts to login user
-                    device = request.COOKIES['device']
-                    # try:
-                    #     device = request.COOKIES['device']
-                    #     response = redirect('users:profile')
-                    # except:
-                    #     device = uuid.uuid4().hex
-                    #     response = redirect('users:profile')
-                    #     response.set_cookie('device', device)
-                    # response.set_cookie('cookie_name2', 'cookie_name2_value')
+                    device = request.COOKIES.get('device')
                     order_with_same_device = Order.objects.filter(customer__device=device, status='ordering').exists()
                     if order_with_same_device:
                         print('login --- order exist -- add orders')
                         current_device_order = Order.objects.get(customer__device=device, status='ordering')
                         print(current_device_order)
                         device_shopping_items = current_device_order.shoppingcart_set.all()
-                        print(device_shopping_items)
-                        user_order = Order.objects.get_or_create(customer=user, status='ordering')
+                        print('device_shopping_items', device_shopping_items)
+                        user_order, created = Order.objects.get_or_create(customer=user, status='ordering',
+                                                                          type='CUSTOMER')
+                        print('user_order', user_order)
                         for item in device_shopping_items:
                             print(item)
                             user_order.shoppingcart_set.add(item)
-                        print(user_order)
+                        print('user_order', user_order)
                         current_device_order.delete()
 
                     login(request, user)

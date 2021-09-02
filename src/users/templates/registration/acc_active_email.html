@@ -1,0 +1,5 @@
+{% autoescape off %}
+    سلام {{ user.email }}
+    لطفا برای ثبت ایمیل خود روی لینک زیر کلیک کنید
+    http://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
+{% endautoescape %}

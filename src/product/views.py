@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -6,6 +8,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.template import loader
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -28,17 +32,6 @@ class BookListView(generic.ListView):
     def dispatch(self, request, *args, **kwargs):
         # data[]
         return super(BookListView, self).dispatch(request, *args, **kwargs)
-
-
-# ------------------------------------------------------------------------
-# def book_after_search(request):
-#     """
-#     Method for search ====== fail :/
-#     """
-#     if request.method == 'GET':
-#         books = request.GET.get()
-#         print(books)
-#         return render(request, 'search_results.html')
 
 
 # ------------------------------------------------------------------------
@@ -187,3 +180,35 @@ class CategoryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('book_list')
+
+
+# ------------------------------------------------------------------------
+def most_least_price(request):
+    sort_by = request.GET.get('sortBy')
+    data = {}
+    print(sort_by)
+    if sort_by == '0':
+        data['books'] = Book.objects.all()
+    elif sort_by == '1':
+        data['books'] = Book.objects.all().order_by('-created')
+    elif sort_by == '2':
+        data['books'] = Book.objects.all().order_by('created')
+    else:
+        data['error'] = 'یه چیزی اشتباه شده'
+    if request.is_ajax():
+        # return JsonResponse(data, safe=False)
+        # return render(request, 'book_list.html', data)
+        # html = render_to_string(
+        #     template_name="book_list.html",
+        #     context=data
+        # )
+        t = loader.get_template('book_list.html')
+        books = {"books": data}
+        # return JsonResponse(books, safe=False)
+        # return HttpResponse(t.render(books))
+        return render(request, 'book_list.html', books)
+
+
+def sort(request):
+    value = request.GET.get('sort')
+    print(value)

@@ -1,14 +1,11 @@
 import json
-import random
 import uuid
 from datetime import timedelta
 from django.db.models import Q, Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from django.views.generic import ListView
 from order.models import ShoppingCart, Order
-from order.utils import update_cookie
 from product.models import Book
 
 
@@ -62,7 +59,7 @@ def home(request):
         best_sellers_books.append(book)
     data = {}
     now = timezone.now().today()
-    after_one_week = now + timedelta(days=-7)
+    after_one_week = now + timedelta(days=-14)
     newest_books = Book.objects.filter(created__lte=now, created__gte=after_one_week)
     data['best_sellers_books'] = best_sellers_books
     data['newest_books'] = newest_books

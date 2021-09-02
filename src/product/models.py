@@ -108,7 +108,6 @@ class Book(models.Model):
         # return reverse('book_detail', kwargs={'slug': self.slug})
         return reverse('book_detail', kwargs={'pk': self.pk})
 
-
     def update_count(self, quantity):
         """
         update inventory after per order

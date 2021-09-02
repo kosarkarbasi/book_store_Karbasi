@@ -16,7 +16,7 @@ from .views import (registration_view,
                     delete_address,
                     create_personnel,
                     validate_email,
-                    logout_view)
+                    logout_view, activate)
 
 app_name = 'users'
 
@@ -37,6 +37,7 @@ urlpatterns = [
 
     path('register/', registration_view, name='register'),
     path('ajax/validate_email/', validate_email, name='validate_email'),
+    path('activate/<uidb64>/<token>/', activate, name='activate'),
 
     # path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 

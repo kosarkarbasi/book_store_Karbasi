@@ -6,7 +6,7 @@
 
 {% block content %}
     <!-- Start All Title Box -->
-    <div class="all-title-box">
+    <div class="all-title-box" id="container">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -28,10 +28,13 @@
                 <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
                     <div class="product-categori">
                         <div class="search-product">
-                            <form action="{% url 'search_results' %}">
-                                <input class="form-control" placeholder="Search here..." name="search" type="text">
-                                <button type="submit"><i class="fa fa-search"></i></button>
-                            </form>
+                            {#                            <form>#}
+                            <div class="ui-widget">
+                                <input name="search" id="inner-search" type="text" class="form-control"
+                                       placeholder="Search here...">
+                            </div>
+                            <button type="submit"><i class="fa fa-search"></i></button>
+                            {#                            </form>#}
                         </div>
                         <div class="filter-sidebar-left">
                             <div class="title-left">
@@ -81,17 +84,19 @@
                         <div class="product-item-filter row">
                             <div class="col-12 col-sm-8 text-center text-sm-left">
                                 <div class="toolbar-sorter-right">
-                                    <span>Sort by </span>
-                                    <select id="basic" class="selectpicker show-tick form-control"
-                                            data-placeholder="$ USD">
-                                        <option data-display="Select">Nothing</option>
-                                        <option value="1">Popularity</option>
-                                        <option value="2">High Price → High Price</option>
-                                        <option value="3">Low Price → High Price</option>
-                                        <option value="4">Best Selling</option>
-                                    </select>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            Dropdown button
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li><a class="dropdown-item" href="#">Action</a></li>
+                                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <p>Showing all 4 results</p>
                             </div>
                             <div class="col-12 col-sm-4 text-center text-sm-right">
                                 <ul class="nav nav-tabs ml-auto">
@@ -113,7 +118,7 @@
                                     {% include 'message.html' %}
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade show active" id="grid-view">
-                                    <div class="row">
+                                    <div class="row" id="books">
                                         {% for book in books %}
                                             <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
                                                 <div class="products-single fix">
@@ -155,8 +160,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="why-text">
-                                                        <h4>{{ book.title }}</h4>
-                                                        <h5>{{ book.price }}</h5>
+                                                        <h4 id="title">{{ book.title }}</h4>
+                                                        <h5 id="price">{{ book.price }}</h5>
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,4 +242,79 @@
 {% endblock content %}
 
 {% block script %}
+    <!-- This is custom Javascript responsible for autocomplete -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#inner-search").autocomplete({
+                source: "{% url 'search' %}",
+                minLength: 2,
+                select: function (event, ui) {
+                    GetRedirectPage(ui.item.title, ui.item.value);
+                }
+            });
+
+            /*
+
+
+
+
+
+
+
+            {#for sort by#}
+            $("#sort").change(function (e) {
+                e.preventDefault()
+
+                var sortBy = $(this).val()
+                console.log(sortBy)
+                $.ajax({
+                    type: "GET",
+
+
+
+
+
+
+
+            {#url: '{% url 'sort' %}',#}
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        sortBy: sortBy
+                    },
+                    success: function (response) {
+
+
+
+
+
+
+
+            {#$.each(response.books, function () {#}
+
+
+
+
+
+
+
+            {#$('#title').text(response.queryset.title)#}
+                        $('.product-categorie-box').html(response.books)
+                        //});
+                    },
+                    error: function (response) {
+                        iziToast.error({
+                            title: ':(',
+                            message: 'error'
+                        });
+                    }
+                });
+            })
+
+        });*/
+
+            function GetRedirectPage(label, slug) {
+                window.location.href = "{% url 'search_results' %}" + '?search=' + slug;
+            }
+
+    </script>
 {% endblock script %}

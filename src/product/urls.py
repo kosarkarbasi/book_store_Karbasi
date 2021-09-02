@@ -4,7 +4,6 @@ import product.views as views
 urlpatterns = [
     path('books/', views.BookListView.as_view(), name='book_list'),
     path(r'books/detail/<int:pk>', views.product_detail, name='book_detail'),
-    # path('books/search/', views.book_after_search, name='book_search'),
     path('category/<int:pk>', views.category, name='category'),
     path('author/<int:pk>', views.author, name='author'),
 
@@ -14,4 +13,7 @@ urlpatterns = [
     path('create/author/', views.AuthorCreateView.as_view(), name='author_create'),
 
     path('create/category/', views.CategoryCreateView.as_view(), name='category_create'),
+
+    # path('sort/by/', views.most_least_price, name='sort'),
+    path('sort/', views.sort, name='sort'),
 ]
