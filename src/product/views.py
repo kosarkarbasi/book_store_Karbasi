@@ -35,7 +35,7 @@ class BookListView(generic.ListView):
 
 
 # ------------------------------------------------------------------------
-def product_detail(request, pk=None):
+def product_detail(request, pk=None, book_quantity=1):
     """
     Function-based view for book_detail
     In book_detail.html,

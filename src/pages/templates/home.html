@@ -165,16 +165,28 @@
                                 <img src="{{ book.image.url }}" class="img-fluid" alt="Image">
                                 <div class="mask-icon">
                                     <ul>
-                                        <li><a href="{% url 'book_detail' book.id %}" data-toggle="tooltip"
+                                        <li><a href="{{ book.get_absolute_url }}"
+                                               data-toggle="tooltip"
                                                data-placement="right"
-                                               title="View"><i
-                                                class="fas fa-eye"></i></a></li>
-                                        <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i
-                                                class="fas fa-sync-alt"></i></a></li>
-                                        <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                               title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                                               title="جزئیات"><i class="fas fa-eye"></i></a>
+                                        </li>
+                                        {% if user.is_superuser or user.is_staff %}
+                                            <li><a href="{% url 'book_update' book.pk %}"
+                                                   data-toggle="tooltip"
+                                                   data-placement="right"
+                                                   title="به روز رسانی"><i
+                                                class="fas fa-sync-alt"></i></a>
+                                        {% endif %}
+                                        </li>
+                                        <li><a href="#" data-toggle="tooltip"
+                                               data-placement="right"
+                                               title="Add to Wishlist"><i
+                                                class="far fa-heart"></i></a>
+                                        </li>
                                     </ul>
-                                    <a class="cart" href="#">افزودن به سبد خرید</a>
+                                    <a class="cart" href="{% url 'book_detail' book.id %}">
+                                        مشاهده و افزودن به سبد خرید
+                                    </a>
                                 </div>
                             </div>
                             <div class="why-text">
@@ -282,8 +294,8 @@
                                 <li>
                                     <p><i class="fas fa-phone-square"></i>تلفن:
                                         <a href="tel:+98-92119865916" dir="ltr">
-                                        +098 9211985916
-                                    </a></p>
+                                            +098 9211985916
+                                        </a></p>
                                 </li>
                                 <li>
                                     <p><i class="fas fa-envelope"></i>ایمیل: <a href="mailto:kosar.karbasi@yahoo.com">

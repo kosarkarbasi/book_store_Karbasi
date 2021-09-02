@@ -31,7 +31,6 @@ def cart(request):
 
     if request.method == "POST":
         data = {}
-
         item_id = request.POST.get('item_id')
         operation = request.POST.get('buttonText')
         code = request.POST.get('code')
