@@ -63,7 +63,7 @@ It is possible to search in site base on name of books and authors
  * Javascript
 
 ### Here are some pages of This Project
-![Alt text](/images/home_1.png?raw=true)
+![plot](./images/home_1.png)
 ![plot](./images/home_2.png)
 ![plot](./images/home_3.png)
 
