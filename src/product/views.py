@@ -78,13 +78,17 @@ def product_detail(request, pk=None):
 
         data = {}
         if int(shopping_cart.quantity) > book.inventory:
+            messages.error(request, 'موجودی کتاب کافی نیست')
             data['error_inventory'] = 'موجودی کتاب کافی نیست'
             shopping_cart.delete()
-            return JsonResponse(data, safe=False)
+            # return JsonResponse(data, safe=False, status=1)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         shopping_cart.update_quantity(shopping_cart.quantity)
         shopping_cart.save()
         return redirect('cart')
+        # data['order'] = order,
+        # return JsonResponse(status=1)
 
     context = {'book': book}
     return render(request, 'book_detail.html', context)

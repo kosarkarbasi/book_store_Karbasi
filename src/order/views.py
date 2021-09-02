@@ -86,8 +86,14 @@ def cart(request):
                     elif user_order.status == 'ordering' and user_order.code is not None:
                         # order.save_code() # if we want to replace code
                         data['warning_code'] = "شما مجاز به استفاده از یک کد هستید"
+                    elif code_discount.limit == 0:
+                        data['error_code'] = "تعداد استفاده از این کد تمام شده است"
+                        # code_discount.active = False
+                        # code_discount.save()
                 else:
                     order.save_code(code_discount)
+                    code_discount.limit -= 1
+                    code_discount.save()
                     messages.success(request, 'کد اعمال شد')
                     data['code_message'] = "کد اعمال شد"
                     data['order_price_with_discount'] = order.total_price_with_discount

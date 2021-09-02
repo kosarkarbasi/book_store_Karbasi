@@ -180,34 +180,35 @@
 
 {% block script %}
     <script>
-        $(document).ready(function () {
-            $("#submit_btn_quantity").click(function (e) {
-                e.preventDefault()
-                let quantity = $(`#quantity`).val()
-                console.log(quantity)
-                let url = $(`#quantity_form`).attr('action')
-                console.log(url)
+        /*
+            $(document).ready(function () {
+                $("#submit_btn_quantity").click(function (e) {
+                    e.preventDefault()
+                    let quantity = $(`#quantity`).val()
+                    console.log(quantity)
+                    let url = $(`#quantity_form`).attr('action')
+                    console.log(url)
 
-                $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'quantity': quantity,
-                    },
-                    success: function (response) {
-                        iziToast.error({
-                            title: ':)',
-                            message: response.error_inventory
-                        });
-                    },
-                    error: function (response) {
-                        console.log('error', response);
-                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: {
+                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                            'quantity': quantity,
+                        },
+                        success: function (response) {
+                            iziToast.error({
+                                title: ':)',
+                                message: response.error_inventory
+                            });
+                        },
+                        error: function (response) {
+                            console.log('error', response);
+                        }
+                    })
                 })
-            })
-        });
-
+            });
+    */
     </script>
 
     </script>

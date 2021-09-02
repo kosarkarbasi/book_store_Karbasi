@@ -63,6 +63,7 @@ class CodeDiscount(models.Model):
     discount = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)])
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    limit = models.IntegerField(null=True, blank=True)
     active = models.BooleanField(default=False)
 
     def check_activation(self):
