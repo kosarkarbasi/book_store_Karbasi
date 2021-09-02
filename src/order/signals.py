@@ -9,8 +9,9 @@ def deactivate_discount(sender, instance, created, **kwargs):
     if instance.status == 'ordering':
         pass
     else:
-        code = instance.code
-        code_instance = CodeDiscount.objects.get(code__exact=code)
-        if code_instance.limit == 0:
-            code_instance.active = False
-            code_instance.save()
+        if instance.code:
+            code = instance.code
+            code_instance = CodeDiscount.objects.get(code__exact=code)
+            if code_instance.limit == 0:
+                code_instance.active = False
+                code_instance.save()

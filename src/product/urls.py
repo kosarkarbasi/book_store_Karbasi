@@ -14,6 +14,5 @@ urlpatterns = [
 
     path('create/category/', views.CategoryCreateView.as_view(), name='category_create'),
 
-    # path('sort/by/', views.most_least_price, name='sort'),
     path('sort/', views.sort, name='sort'),
 ]
