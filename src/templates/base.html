@@ -7,8 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
 
-        {% block title %}
-        {% endblock title %}
+    {% block title %}
+    {% endblock title %}
     {% load static %}
 
     {% block page-style %}
@@ -111,7 +111,8 @@
                             <li><a href="{% url 'users:password_change' %}">تعویض پسورد</a></li>
                             {% if user.is_superuser %}
                                 <li><a href="{% url 'admin_dashboard' %}">داشبورد ادمین</a></li>
-                                <li><a href="{% url 'create_code' %}">افزودن تخفیف</a></li>
+                                <li><a href="{% url 'create_code' %}">افزودن تخفیف کدی</a></li>
+                                <li><a href="{% url 'amount_discount' %}">افزودن تخفیف درصدی/ مقداری</a></li>
                             {% endif %}
                             <li><a href="{% url 'users:profile' %}">حساب کاربری</a></li>
                             <li><a href="{% url 'users:user_addresses' %}">مدیریت آدرس ها</a></li>

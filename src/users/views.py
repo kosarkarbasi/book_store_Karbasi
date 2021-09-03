@@ -114,8 +114,7 @@ def login_view(request):
                         print(current_device_order)
                         device_shopping_items = current_device_order.shoppingcart_set.all()
                         print('device_shopping_items', device_shopping_items)
-                        user_order, created = Order.objects.get_or_create(customer=user, status='ordering',
-                                                                          type='CUSTOMER')
+                        user_order, created = Order.objects.get_or_create(customer=user, status='ordering',)
                         print('user_order', user_order)
                         for item in device_shopping_items:
                             print(item)

@@ -6,13 +6,12 @@ from django.urls import reverse
 
 class AmountPercentDiscount(models.Model):
     """
-    تخفیف مقداری یا درصدی که ادمین آن را تعریف کرده و روی هر کتاب میتواند اعمال شود
+    amount or percent discount that apply on every book
     fields
-    type: # نوع تخفیف - درصدی یا مقداری
-    book_id: آیدی کتابی که شامل تخفیف می شود
-    max_discount: حداکثر مقداری که میتواند از قیمت کتاب کم شود
-    percent: درصدی که روی کتاب تخفیف می خورد
-    amount: مقداری که روی کتاب تخفیف می خورد
+    type: discount type - percent/amount
+    max_discount: maximum value of discount
+    percent: value of percent discount
+    amount: value of amount discount
     """
     DISCOUNT_TYPE_CHOICES = (
         ('Percent', 'Percent'),
@@ -52,12 +51,12 @@ class AmountPercentDiscount(models.Model):
 
 class CodeDiscount(models.Model):
     """
-    کد تخفیف که یک درصدی به آن داده شده و هرکاربر با وارد کردن کد، روی کل خریدش تخفیف میگیرد
-    code: کد تخفیف
-    discount: مقدار درصد تخفیف
-    start_date: شروع تاریخ تخفیف
-    end_date: پایان تخفیف
-    active: اکتیو بودن یا نبودن
+    discount code that get percent and apply on shopping cart
+    code: discount code
+    discount: discount percent
+    start_date: start date of discount
+    end_date: end date of discount
+    active: active or deactivate
     """
     code = models.CharField(max_length=10, primary_key=True)
     discount = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(1)])

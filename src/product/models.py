@@ -127,7 +127,7 @@ class Book(models.Model):
         if self.discount:
             if self.discount.type == 'Amount':
                 new_price = self.price - self.discount.amount
-                if new_price < self.discount.max_discount:
+                if self.discount.max_discount > new_price > 0:
                     # self.price = new_price
                     return int(new_price)
                 else:

@@ -26,11 +26,13 @@ def code_apply(request):
     return redirect('cart')
 
 
+# -------------------------------------------------------------------------------
 class AmountPercentDiscountCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = AmountPercentDiscount
     fields = ('type', 'percent', 'amount', 'max_discount', 'active')
     template_name = 'discount_create.html'
     success_message = 'تخفیف با موفقیت اضافه شد'
+
     # success_url = redirect('home')
 
     @method_decorator(permission_required('discount.add_amountpercentdiscount', raise_exception=True))
@@ -41,3 +43,20 @@ class AmountPercentDiscountCreateView(LoginRequiredMixin, SuccessMessageMixin, C
                 "شما اجاره ایجاد تخفیف را ندارید"
             )
         return super(AmountPercentDiscountCreateView, self).dispatch(request, *args, **kwargs)
+
+
+# -------------------------------------------------------------------------------
+class CodeDiscountCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = CodeDiscount
+    fields = ('code', 'discount', 'start_date', 'end_date', 'limit', 'active')
+    template_name = 'codediscount_create.html'
+    success_message = 'تخفیف با موفقیت اضافه شد'
+
+    @method_decorator(permission_required('discount.add_amountpercentdiscount', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs):
+        """ Permission check for this class """
+        if not request.user.has_perm('discount.add_amountpercentdiscount'):
+            raise PermissionDenied(
+                "شما اجاره ایجاد تخفیف را ندارید"
+            )
+        return super(CodeDiscountCreateView, self).dispatch(request, *args, **kwargs)
