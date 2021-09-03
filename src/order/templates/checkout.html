@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% load humanize %}
+{% block title %}
+    <title>نهایی کردن خرید</title>
+{% endblock title %}
 {% block content %}
     <div class="cart-box-main">
         <div class="container">
@@ -11,7 +14,8 @@
                         </div>
                         <p class="text-right">{{ address }}</p>
                         <hr class="mb-4">
-                        <div class="col-12 d-flex shopping-box"><a href="{% url 'users:user_addresses' %}" class="ml-auto btn hvr-hover">اضافه
+                        <div class="col-12 d-flex shopping-box"><a href="{% url 'users:user_addresses' %}"
+                                                                   class="ml-auto btn hvr-hover">اضافه
                             کردن آدرس جدید</a></div>
                         <hr class="mb-4">
                         <div class="title text-right"><span>روش پرداخت</span></div>

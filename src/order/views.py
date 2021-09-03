@@ -86,7 +86,6 @@ def cart(request):
                     order.save_code(code_discount)
                     code_discount.limit -= 1
                     code_discount.save()
-                    messages.success(request, 'کد اعمال شد')
                     data['code_message'] = "کد اعمال شد"
                     data['order_price_with_discount'] = order.total_price_with_discount
                     data['total_discount'] = order.total_discount

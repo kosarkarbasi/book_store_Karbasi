@@ -1,18 +1,25 @@
+/*@font-face {*/
+/*  font-family: "Vazir";*/
+/*  src: url("../fonts/Vazir.eot");*/
+/*  !* IE9 Compat Modes *!*/
+/*  src: url("../fonts/Vazir.eot?#iefix") format("embedded-opentype"),*/
+/*    url("../fonts/Vazir-Regular.woff2") format("woff2"),*/
+/*    url("../fonts/Vazir-Regular.woff") format("woff"),*/
+/*    url("../fonts/Vazir.ttf") format("truetype");*/
+/*  !* Safari, Android, iOS *!*/
+/*}*/
 @font-face {
-  font-family: "Vazir";
-  src: url("../fonts/Vazir.eot");
+  font-family: "B Nazanin";
+  src: url("../fonts/BNazanin.eot");
   /* IE9 Compat Modes */
-  src: url("../fonts/Vazir.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/Vazir.woff2") format("woff2"),
-    url("../fonts/Vazir.woff") format("woff"),
-    url("../fonts/Vazir.ttf") format("truetype");
+  src: url("../fonts/BNazanin.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/BNazanin.woff2") format("woff2"),
+    url("../fonts/BNazanin.woff") format("woff"),
+    url("../fonts/BNazanin.ttf") format("truetype");
   /* Safari, Android, iOS */
 }
 
-body {
-  font-family: "Vazir", serif !important;
-}
 
-div {
-  font-family: "Vazir", serif !important;
+body {
+  font-family: 'B Nazanin', 'Segoe UI', Tahoma, sans-serif;
 }

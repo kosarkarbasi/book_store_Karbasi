@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% load humanize %}
-
+{% block title %}
+    <title>سبد خرید</title>
+{% endblock title %}
 {% block content %}
     <!-- Start All Title Box -->
     <div class="all-title-box">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>Cart</h2>
+                    <h2>سبد خرید</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'book_list' %}">کتاب ها</a></li>
                         <li class="breadcrumb-item active">سبد خرید</li>
@@ -43,7 +45,7 @@
                             {% for item in order.shoppingcart_set.all %}
                                 <tr>
                                     <td class="thumbnail-img">
-                                        <a href="#">
+                                        <a href="{% url 'book_detail' item.item.pk %}">
                                             <img class="img-fluid" src="{{ item.item.image.url }}" alt=""/>
                                         </a>
                                     </td>
@@ -121,11 +123,8 @@
                                        aria-label="Coupon code"
                                        type="text" name="code" id="code">
                                 <div class="input-group-append">
-{#                                    {% if user.is_authenticated %}#}
-                                        <button class="btn btn-theme code_submit" type="submit">کد تخفیف</button>
-{#                                    {% else %}#}
-{#                                        <a class="btn btn-theme" type="button">کد تخفیف</a>#}
-{#                                    {% endif %}#}
+                                    <button class="btn btn-theme code_submit" type="submit">کد تخفیف</button>
+
                                 </div>
 
                             </div>
@@ -162,7 +161,8 @@
                         <hr class="my-1">
                         <div class="d-flex">
                             <h4>کد تخفیف</h4>
-                            <div class="ml-auto font-weight-bold" id="discount_value">{{ order.code.discount_value }}%</div>
+                            <div class="ml-auto font-weight-bold" id="discount_value">{{ order.code.discount_value }}%
+                            </div>
                         </div>
                         <div class="d-flex">
                             <h4>هزینه ارسال</h4>
